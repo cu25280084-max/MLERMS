@@ -14,3 +14,4 @@ Werkzeug==3.1.8
 gunicorn
 python-dotenv
 pyotp
+qrcode[pil]
