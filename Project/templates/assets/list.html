@@ -1,0 +1,1147 @@
+{% extends "base.html" %}
+{% block title %}{{ selected_unit['unit_name'] }} - Asset Management | MLERMS{% endblock %}
+{% block head_extra %}
+<style>
+
+        
+/* =========================================================
+           MLERMS — ASSET MANAGEMENT / LIST
+           Visual language matched to the Main Dashboard + Unit Dashboard
+           ========================================================= */
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+/* =========================================================
+           TOP BAR — SAME AS UNIT DASHBOARD
+           ========================================================= */
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+
+
+        
+/* =========================================================
+           PAGE SHELL
+           ========================================================= */
+
+
+        
+
+
+        
+.quick-access-back {
+            margin-top: 10px;
+        }
+
+
+        
+.quick-access-back .back-unit-dashboard {
+            min-height: 34px;
+            padding: 8px 14px;
+            font-size: 11px;
+            border-radius: 8px;
+        }
+
+
+        
+.back-unit-dashboard {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 18px;
+            min-height: 40px;
+            border: 1px solid #cfd7de;
+            border-radius: 9px;
+            background: #fff;
+            color: var(--mlerms-navy);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: background .15s ease, border-color .15s ease,
+                        transform .15s ease, box-shadow .15s ease;
+        }
+
+
+        
+.back-unit-dashboard:hover {
+            background: #f5f7f9;
+            border-color: #aeb9c3;
+            color: var(--mlerms-navy);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(15,23,42,.08);
+        }
+
+
+        
+/* =========================================================
+           UNIT HUB — SHARED CANONICAL COMPONENT
+           Match index_unit_dashboard_redesigned_v13.html
+           ========================================================= */
+.unit-hub {
+    position: relative;
+    isolation: isolate;
+    margin-bottom: 20px;
+    padding: 17px 20px 12px;
+    overflow: hidden;
+    border: 1px solid rgba(219, 225, 229, .96);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, .93);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .09), 0 1px 3px rgba(15, 23, 42, .04);
+    backdrop-filter: blur(8px);
+}
+.unit-hub-cover {
+    position: absolute;
+    inset: 0 0 78px auto;
+    width: 64%;
+    height: calc(100% - 78px);
+    object-fit: cover;
+    object-position: center right;
+    opacity: .78;
+    z-index: -1;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.24) 25%, #000 67%);
+    mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.24) 25%, #000 67%);
+}
+.unit-hub-top {
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 0 4px 13px;
+}
+.unit-identity {
+    display: flex;
+    align-items: center;
+    gap: 17px;
+    min-width: 0;
+    width: min(100%, 920px);
+}
+.unit-logo-badge {
+    width: 68px;
+    height: 68px;
+    flex: 0 0 68px;
+    display: grid;
+    place-items: center;
+    padding: 7px;
+    box-sizing: border-box;
+    border: 1px solid rgba(197, 207, 213, .95);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(241,245,246,.95));
+    box-shadow: 0 5px 14px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255,255,255,.95);
+}
+.unit-logo-badge img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.unit-hub .page-title-main { position: relative; z-index: 1; min-width: 0; flex: 1 1 auto; max-width: none; }
+.unit-hub .page-eyebrow { margin-bottom: 7px; font-size: 9px; letter-spacing: 1.7px; opacity: .88; }
+.unit-hub .page-title-main h1 {
+    margin: 0;
+    color: var(--mlerms-navy);
+    font-size: clamp(24px, 1.65vw, 29px);
+    line-height: 1.12;
+    font-weight: 850;
+    letter-spacing: -.45px;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+    text-wrap: nowrap;
+    text-shadow: 0 1px 0 rgba(255,255,255,.35);
+}
+.unit-hub .page-title-main p { margin: 8px 0 0; color: #5e6b7d; font-size: 11px; line-height: 1.25; letter-spacing: .1px; }
+.unit-home-link {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 10px 17px 10px 12px;
+    color: #fff;
+    background: linear-gradient(135deg, #202b40 0%, #172033 60%, #111a2b 100%);
+    border: 1px solid rgba(255,255,255,.42);
+    border-left: 4px solid #f26b21;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(15,23,42,.24), inset 0 1px 0 rgba(255,255,255,.10);
+    font-size: 14px;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.unit-home-link::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 1px solid rgba(242,107,33,.72);
+    border-radius: 15px;
+    pointer-events: none;
+}
+.unit-home-link .unit-home-arrow {
+    width: 25px;
+    height: 25px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 8px;
+    background: rgba(255,255,255,.10);
+    font-size: 18px;
+    line-height: 1;
+}
+.unit-home-link:hover { color: #fff; background: linear-gradient(135deg, #2a3851, #1d2940 60%, #172033); transform: translateY(-2px); box-shadow: 0 11px 24px rgba(15,23,42,.28); }
+.unit-home-link:hover .unit-home-arrow { transform: translateX(-2px); }
+.unit-home-link:active { transform: translateY(0); }
+.unit-home-link:focus-visible { outline: 3px solid #f26b21; outline-offset: 5px; }
+.unit-module-nav {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 11px;
+    padding-top: 13px;
+    border-top: 1px solid rgba(205, 213, 220, .88);
+}
+.unit-module-link {
+    min-width: 0;
+    min-height: 72px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: 1px solid #d3dce3;
+    border-radius: 14px;
+    background: rgba(255,255,255,.96);
+    color: var(--mlerms-navy);
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -.15px;
+    box-shadow: 0 2px 5px rgba(15,23,42,.025);
+    transition: background .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+.unit-module-link:hover {
+    color: var(--mlerms-navy);
+    background: #f7faf9;
+    border-color: #aebbbf;
+    transform: translateY(-3px) scale(1.015);
+    box-shadow: 0 7px 16px rgba(15,23,42,.10);
+}
+.unit-module-link:focus-visible { outline: 3px solid #f26b21; outline-offset: 3px; }
+.unit-module-link.active {
+    color: #fff;
+    border-color: var(--mlerms-navy);
+    background: linear-gradient(135deg, #202b40 0%, #172033 60%, #111a2b 100%);
+    transform: translateY(-1px) scale(1.025);
+    box-shadow: 0 7px 17px rgba(17,26,43,.22), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.unit-module-link.active:hover {
+    color: #fff;
+    background: linear-gradient(135deg, #26354d 0%, #1b2740 60%, #152039 100%);
+    border-color: #26354d;
+    transform: translateY(-4px) scale(1.035);
+    box-shadow: 0 10px 22px rgba(17,26,43,.28);
+}
+.unit-module-link:active, .unit-module-link.active:active { transform: translateY(0) scale(1.005); }
+.unit-module-icon {
+    width: 46px;
+    height: 46px;
+    flex: 0 0 46px;
+    display: grid;
+    place-items: center;
+    border: 1px solid #d5dde2;
+    border-radius: 12px;
+    background: #f4f7f8;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+    transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.unit-module-icon img { display: block; width: 34px; height: 34px; object-fit: contain; }
+.unit-module-link:hover .unit-module-icon { transform: scale(1.045); }
+.unit-module-link.active .unit-module-icon { border-color: rgba(255,255,255,.32); background: rgba(255,255,255,.12); }
+.unit-module-label { min-width: 0; overflow-wrap: anywhere; }
+
+/* Keep the Asset Management unit banner identical to the approved shared unit hub. */
+.unit-hub,
+.unit-hub * { box-sizing: border-box; }
+.unit-hub .unit-hub-cover { display: block; max-width: none; margin: 0; }
+.unit-hub .unit-logo-badge img,
+.unit-hub .unit-module-icon img { max-width: none; margin: 0; }
+.unit-hub .page-title-main h1 { margin-block: 0; }
+.unit-hub .page-title-main p { margin-block-end: 0; }
+.unit-hub .unit-module-link { text-decoration: none; }
+
+
+/* Shared module navigation is rendered in .unit-hub above. */
+
+/* =========================================================
+           ASSET LIST PANEL
+           ========================================================= */
+
+
+        
+.asset-card {
+            background: rgba(255,255,255,.97);
+            border: 1px solid var(--mlerms-border);
+            border-radius: 16px;
+            box-shadow:
+                0 4px 16px rgba(15,23,42,.055),
+                0 1px 2px rgba(15,23,42,.035);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+
+        
+.asset-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #e6ebee;
+            background: #fff;
+        }
+
+
+        
+.asset-card-title {
+            font-size: 17px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: var(--mlerms-navy);
+        }
+
+
+        
+.asset-card-subtitle {
+            color: #718096;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+
+        
+.asset-add-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            min-height: 38px;
+            padding: 9px 15px;
+            border: 1px solid #238b5b;
+            border-radius: 9px;
+            background: #238b5b;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+            transition: .15s ease;
+        }
+
+
+        
+.asset-add-button:hover {
+            background: #1d754d;
+            border-color: #1d754d;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 5px 12px rgba(35,139,91,.18);
+        }
+
+
+        
+.asset-table-wrap {
+            overflow-x: auto;
+        }
+
+
+        
+.asset-card .table {
+            width: 100%;
+            margin: 0;
+            min-width: 1120px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+
+        
+.asset-card .table thead th {
+            background: #172033;
+            color: #fff;
+            border: 0;
+            padding: 12px 13px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: .65px;
+            white-space: nowrap;
+            font-weight: 800;
+        }
+
+
+        
+.asset-card .table tbody td {
+            padding: 12px 13px;
+            font-size: 12px;
+            color: #344054;
+            white-space: nowrap;
+            border-color: #edf0f3;
+            vertical-align: middle;
+        }
+
+
+        
+.asset-card .table tbody tr {
+            transition: background .15s ease;
+        }
+
+
+        
+.asset-card .table tbody tr:hover {
+            background: #f8fafb;
+        }
+
+
+        
+.asset-id {
+            font-weight: 800;
+            font-size: 11px;
+            letter-spacing: .03em;
+            color: #687487;
+        }
+
+
+        
+.asset-name {
+            font-weight: 700;
+            color: #182235;
+        }
+
+
+        
+.quantity-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+            min-height: 29px;
+            padding: 4px 9px;
+            border-radius: 8px;
+            background: #f2f5f7;
+            border: 1px solid #e0e5e9;
+            font-weight: 800;
+            color: #172033;
+        }
+
+
+        
+.maintenance-note {
+            display: block;
+            color: #b45309;
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 3px;
+        }
+
+
+        
+.status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 27px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .15px;
+        }
+
+
+        
+.status-operational {
+            background: #e3f7eb;
+            color: #187447;
+            border: 1px solid #c7ecd6;
+        }
+
+
+        
+.status-maintenance {
+            background: #fff4d8;
+            color: #a45f08;
+            border: 1px solid #f4dfad;
+        }
+
+
+        
+.status-decommissioned {
+            background: #edf0f3;
+            color: #53606f;
+            border: 1px solid #dce2e7;
+        }
+
+
+        
+/* =========================================================
+           ACTION BUTTONS
+           ========================================================= */
+
+
+        
+.asset-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 6px;
+            flex-wrap: wrap;
+            min-width: 230px;
+        }
+
+
+        
+.asset-action {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-height: 30px;
+            padding: 6px 10px !important;
+            border-radius: 7px !important;
+            border: 1px solid !important;
+            background: #fff !important;
+            font-size: 10px !important;
+            line-height: 1 !important;
+            font-weight: 800 !important;
+            white-space: nowrap;
+            transition: .15s ease;
+            text-decoration: none !important;
+        }
+
+
+        
+.asset-action:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(15,23,42,.10);
+        }
+
+
+        
+.asset-action-edit {
+            color: #28628a !important;
+            border-color: #b9d3e3 !important;
+            background: #f4f9fc !important;
+        }
+
+
+        
+.asset-action-edit:hover {
+            background: #e7f2f8 !important;
+            border-color: #8fb8d0 !important;
+        }
+
+
+        
+.asset-action-recommission {
+            color: #187447 !important;
+            border-color: #b8dfc7 !important;
+            background: #f1faf4 !important;
+        }
+
+
+        
+.asset-action-recommission:hover {
+            background: #e2f5e9 !important;
+            border-color: #8fc9a5 !important;
+        }
+
+
+        
+.asset-action-decommission {
+            color: #fbfbfa !important;
+            border-color: #0c0c0c !important;
+            background: #2e2e2e !important;
+        }
+
+
+        
+.asset-action-decommission:hover {
+            background: #313131 !important;
+            border-color: #f4f3f2 !important;
+        }
+
+
+        
+.asset-action-delete {
+            color: #a63f4d !important;
+            border-color: #e5b7be !important;
+            background: #fff7f8 !important;
+        }
+
+
+        
+.asset-action-delete:hover {
+            background: #fdebed !important;
+            border-color: #d98f9b !important;
+        }
+
+
+        
+.asset-actions form {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+
+        
+/* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+
+        
+.empty-state {
+            padding: 65px 20px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+
+        
+.empty-state-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+
+
+        
+
+@media (max-width: 1100px) {
+    .unit-module-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .unit-module-link { min-height: 68px; font-size: 15px; }
+}
+@media (max-width: 900px) {
+    .unit-hub-top { gap: 16px; }
+    .unit-hub .page-title-main h1 { font-size: clamp(22px, 3vw, 27px); }
+    .unit-home-link { min-height: 42px; font-size: 12px; padding: 8px 12px 8px 10px; }
+    .unit-module-link.active { transform: translateY(-1px) scale(1.01); }
+    .unit-module-link.active:hover { transform: translateY(-2px) scale(1.015); }
+}
+@media (max-width: 700px) {
+    .unit-hub { padding: 14px 12px 10px; border-radius: 16px; }
+    .unit-hub-cover { width: 100%; height: calc(100% - 70px); opacity: .60; }
+    .unit-hub-top { min-height: 0; align-items: flex-start; flex-direction: column; gap: 14px; padding: 0 2px 12px; }
+    .unit-identity { gap: 10px; width: 100%; }
+    .unit-logo-badge { width: 46px; height: 46px; flex-basis: 46px; padding: 5px; border-radius: 12px; }
+    .unit-hub .page-title-main h1 { font-size: clamp(19px, 5vw, 25px); white-space: normal; }
+    .unit-hub .page-title-main p { font-size: 10px; }
+    .unit-home-link { align-self: flex-start; min-height: 38px; font-size: 11px; }
+    .unit-home-link .unit-home-arrow { width: 22px; height: 22px; font-size: 16px; }
+    .unit-module-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 10px; }
+    .unit-module-link { min-height: 60px; gap: 8px; padding: 8px 9px; border-radius: 12px; font-size: 13px; }
+    .unit-module-icon { width: 36px; height: 36px; flex-basis: 36px; border-radius: 10px; }
+    .unit-module-icon img { width: 27px; height: 27px; }
+    .unit-module-link.active { transform: none; }
+    .unit-module-link.active:hover { transform: translateY(-2px); }
+}
+@media (max-width: 480px) {
+    .unit-home-link { width: auto; }
+    .asset-card-header { align-items: flex-start; flex-direction: column; }
+    .asset-add-button { width: 100%; }
+    .asset-actions { min-width: 220px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .unit-hub *, .unit-hub *::before, .unit-hub *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+    </style>
+{% endblock %}
+{% block content %}
+<!-- =====================================================
+     CANONICAL UNIT BANNER + MODULE NAVIGATION
+     ===================================================== -->
+<section class="unit-hub" aria-label="Unit navigation">
+    <img
+        class="unit-hub-cover"
+        src="{{ url_for('static', filename='images/cover/' ~ (selected_unit['unit_id'] | lower | replace('-', '_')) ~ '_cover.png') }}"
+        alt=""
+        aria-hidden="true"
+        onerror="this.style.display='none';"
+    >
+
+    <div class="unit-hub-top">
+        <div class="unit-identity">
+            <div class="unit-logo-badge" aria-label="Unit insignia">
+                <img
+                    src="{{ url_for('static', filename='images/units/' ~ (selected_unit['unit_id'] | lower | replace('-', '_')) ~ '.png') }}"
+                    alt="{{ selected_unit['unit_name'] }} logo"
+                    onerror="this.closest('.unit-logo-badge').style.display='none';"
+                >
+            </div>
+            <div class="page-title-main">
+                <span class="page-eyebrow">MLERMS / ASSET MANAGEMENT</span>
+                <h1>{{ selected_unit['unit_name'] }}</h1>
+                <p>Unit ID {{ selected_unit['unit_id'] }} — allocated asset management</p>
+            </div>
+        </div>
+
+        <a
+            class="unit-home-link"
+            href="/"
+            aria-label="Return to Main Dashboard"
+        >
+            <span class="unit-home-arrow" aria-hidden="true">←</span>
+            <span>Main Dashboard</span>
+        </a>
+    </div>
+
+    <nav class="unit-module-nav" aria-label="Unit modules">
+        <a class="unit-module-link" href="{{ url_for('dashboard.unit_dashboard', unit_id=selected_unit['unit_id']) }}">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/dashboard.png') }}" alt=""></span>
+            <span class="unit-module-label">Dashboard</span>
+        </a>
+        <a class="unit-module-link active" href="{{ url_for('assets.unit_assets', unit_id=selected_unit['unit_id']) }}" aria-current="page">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/asset_management.png') }}" alt=""></span>
+            <span class="unit-module-label">Asset Management</span>
+        </a>
+        <a class="unit-module-link" href="{{ url_for('maintenance.unit_maintenance', unit_id=selected_unit['unit_id']) }}">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/maintenance.png') }}" alt=""></span>
+            <span class="unit-module-label">Maintenance</span>
+        </a>
+        <a class="unit-module-link" href="/inventory/">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/inventory.png') }}" alt=""></span>
+            <span class="unit-module-label">Inventory</span>
+        </a>
+        <a class="unit-module-link" href="{{ url_for('readiness.unit_readiness', unit_id=selected_unit['unit_id']) }}">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt=""></span>
+            <span class="unit-module-label">Readiness</span>
+        </a>
+        <a class="unit-module-link" href="{{ url_for('audit.audit_home') }}">
+            <span class="unit-module-icon"><img src="{{ url_for('static', filename='images/dashboard/audit_and_reporting.png') }}" alt=""></span>
+            <span class="unit-module-label">Audit &amp; Reporting</span>
+        </a>
+    </nav>
+</section>
+
+<!-- =====================================================
+             ASSET LIST
+             Existing Jinja/data logic is preserved below.
+             ===================================================== -->
+        <div class="asset-card">
+
+
+                <div class="asset-card-header">
+
+                    <div>
+
+                        <div class="asset-card-title">
+                            Allocated Assets
+                        </div>
+
+                        <div class="asset-card-subtitle">
+
+                            Equipment currently allocated to
+                            {{ selected_unit['unit_name'] }}
+
+                        </div>
+
+                    </div>
+
+
+                    <a href="{{ url_for(
+                        'assets.add_asset',
+                        unit_id=selected_unit['unit_id']
+                    ) }}" class="asset-add-button">
+                        + Add Asset
+                    </a>
+
+                </div>
+
+
+                {% if allocations %}
+
+
+                <div class="asset-table-wrap">
+
+                    <table class="table table-hover align-middle">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Allocation ID
+                                </th>
+
+                                <th>
+                                    Asset ID
+                                </th>
+
+                                <th>
+                                    Asset
+                                </th>
+
+                                <th>
+                                    Category
+                                </th>
+
+                                <th>
+                                    Quantity
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Acquisition Date
+                                </th>
+
+                                <th>
+                                    Condition
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+
+                            {% for allocation in allocations %}
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    {{ allocation['allocation_id'] }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="asset-id">
+
+                                        {{ allocation['asset_type_id'] }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="asset-name">
+
+                                        {{ allocation['asset_name'] }}
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ allocation['category_name'] }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="quantity-box">
+
+                                        {{ allocation['quantity'] }}
+
+                                    </span>
+
+
+                                    {% if allocation[
+                                    'maintenance_quantity'
+                                    ] > 0 %}
+
+                                    <span class="maintenance-note">
+
+                                        {{
+                                        allocation[
+                                        'maintenance_quantity'
+                                        ]
+                                        }}
+
+                                        under maintenance
+
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+
+                                    {% if allocation[
+                                    'display_status'
+                                    ] == 'Operational' %}
+
+
+                                    <span class="
+                                        status-badge
+                                        status-operational
+                                    ">
+                                        Operational
+                                    </span>
+
+
+                                    {% elif allocation[
+                                    'display_status'
+                                    ] == 'Under Maintenance' %}
+
+
+                                    <span class="
+                                        status-badge
+                                        status-maintenance
+                                    ">
+                                        Under Maintenance
+                                    </span>
+
+
+                                    {% elif allocation[
+                                    'display_status'
+                                    ] == 'Decommissioned' %}
+
+
+                                    <span class="
+                                        status-badge
+                                        status-decommissioned
+                                    ">
+                                        Decommissioned
+                                    </span>
+
+
+                                    {% endif %}
+
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ allocation[
+                                    'acquisition_date'
+                                    ] }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ allocation[
+                                    'condition'
+                                    ] }}
+
+                                </td>
+
+
+                                <td>
+
+
+                                    <div class="asset-actions">
+
+
+                                        <a href="{{ url_for(
+                                            'assets.edit_asset',
+                                            allocation_id=
+                                                allocation[
+                                                    'allocation_id'
+                                                ]
+                                        ) }}" class="asset-action asset-action-edit">
+                                            Edit
+                                        </a>
+
+
+                                        {% if allocation[
+                                        'status'
+                                        ] == 'Decommissioned' %}
+
+
+                                        <form method="POST" action="{{ url_for(
+                                            'assets.recommission_asset_route',
+                                            allocation_id=
+                                                allocation[
+                                                    'allocation_id'
+                                                ]
+                                        ) }}" onsubmit="return confirm(
+                                            'Recommission this asset allocation?'
+                                        );">
+
+                                            <button type="submit" class="asset-action asset-action-recommission">
+                                                Recommission
+                                            </button>
+
+                                        </form>
+
+
+                                        {% else %}
+
+
+                                        {% if allocation[
+                                        'maintenance_quantity'
+                                        ] == 0 %}
+
+
+                                        <form method="POST" action="{{ url_for(
+                                                'assets.decommission_asset_route',
+                                                allocation_id=
+                                                    allocation[
+                                                        'allocation_id'
+                                                    ]
+                                            ) }}" onsubmit="return confirm(
+                                                'Decommission this asset allocation?'
+                                            );">
+
+                                            <button type="submit" class="asset-action asset-action-decommission">
+                                                Decommission
+                                            </button>
+
+                                        </form>
+
+
+                                        {% endif %}
+
+
+                                        {% endif %}
+
+
+                                        <form method="POST" action="{{ url_for(
+                                            'assets.delete_asset_route',
+                                            allocation_id=
+                                                allocation[
+                                                    'allocation_id'
+                                                ]
+                                        ) }}" onsubmit="return confirm(
+                                            'Delete this asset allocation?'
+                                        );">
+
+                                            <button type="submit" class="asset-action asset-action-delete">
+                                                Delete
+                                            </button>
+
+                                        </form>
+
+
+                                    </div>
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                            {% endfor %}
+
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                {% else %}
+
+
+                <!-- ==================================
+                 EMPTY STATE
+                 ================================== -->
+
+                <div class="empty-state">
+
+                    <div class="empty-state-title">
+
+                        No Assets Allocated
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        No asset allocations currently exist
+                        for this unit.
+
+                    </div>
+
+
+                    <a href="{{ url_for(
+                        'assets.add_asset',
+                        unit_id=selected_unit['unit_id']
+                    ) }}" class="asset-add-button">
+                        + Add First Asset
+                    </a>
+
+                </div>
+
+
+                {% endif %}
+
+
+            </div>
+{% endblock %}

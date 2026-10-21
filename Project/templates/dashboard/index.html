@@ -1,0 +1,3624 @@
+{% extends "base.html" %}
+
+{% block title %}{{ selected_unit['unit_name'] }} - MLERMS{% endblock %}
+
+{% block head_extra %}
+<style>
+
+        /* Unified unit banner + module navigation */
+        .unit-hub {
+            position: relative;
+            isolation: isolate;
+            margin-bottom: 20px;
+            padding: 17px 20px 12px;
+            overflow: hidden;
+            border: 1px solid rgba(219, 225, 229, .96);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, .93);
+            box-shadow: 0 8px 24px rgba(15, 23, 42, .09), 0 1px 3px rgba(15, 23, 42, .04);
+            backdrop-filter: blur(8px);
+        }
+
+        .unit-hub-cover {
+            position: absolute;
+            inset: 0 0 78px auto;
+            width: 64%;
+            height: calc(100% - 78px);
+            object-fit: cover;
+            object-position: center right;
+            opacity: .78;
+            z-index: -1;
+            pointer-events: none;
+            -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.24) 25%, #000 67%);
+            mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.24) 25%, #000 67%);
+        }
+
+        .unit-identity {
+            display: flex;
+            align-items: center;
+            gap: 17px;
+            min-width: 0;
+            width: min(100%, 920px);
+        }
+
+        .unit-logo-badge {
+            width: 68px;
+            height: 68px;
+            flex: 0 0 68px;
+            display: grid;
+            place-items: center;
+            padding: 7px;
+            box-sizing: border-box;
+            border: 1px solid rgba(197, 207, 213, .95);
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(241,245,246,.95));
+            box-shadow: 0 5px 14px rgba(15, 23, 42, .11), inset 0 1px 0 rgba(255,255,255,.95);
+        }
+
+        .unit-logo-badge img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .unit-hub-top {
+            min-height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 0 4px 13px;
+        }
+
+        .page-title-main {
+            position: relative;
+            z-index: 1;
+            min-width: 0;
+            flex: 1 1 auto;
+            max-width: none;
+        }
+
+        .unit-hub .page-eyebrow {
+            margin-bottom: 7px;
+            font-size: 9px;
+            letter-spacing: 1.7px;
+            opacity: .88;
+        }
+
+        .unit-hub .page-title-main h1 {
+            margin: 0;
+            color: var(--mlerms-navy);
+            font-size: clamp(24px, 1.65vw, 29px);
+            line-height: 1.12;
+            font-weight: 850;
+            letter-spacing: -.45px;
+            white-space: normal;
+            overflow-wrap: normal;
+            word-break: normal;
+            text-wrap: nowrap;
+            text-shadow: 0 1px 0 rgba(255,255,255,.35);
+        }
+
+        .unit-hub .page-title-main p {
+            margin: 8px 0 0;
+            color: #5e6b7d;
+            font-size: 11px;
+            line-height: 1.25;
+            letter-spacing: .1px;
+        }
+
+        .page-title-accent {
+            position: relative;
+            z-index: 1;
+            width: 110px;
+            height: 4px;
+            flex: 0 0 110px;
+            border-radius: 999px;
+            background: linear-gradient(90deg,
+                    var(--mlerms-orange) 0 33%,
+                    #dce3e0 33% 66%,
+                    var(--mlerms-green) 66% 100%);
+            box-shadow: 0 1px 3px rgba(15,23,42,.08);
+        }
+
+        .unit-module-nav {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 10px;
+            padding-top: 11px;
+            border-top: 1px solid rgba(205, 213, 220, .88);
+        }
+
+        .unit-module-link {
+            min-width: 0;
+            min-height: 66px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 9px 13px;
+            border: 1px solid #d3dce3;
+            border-radius: 13px;
+            background: rgba(255, 255, 255, .96);
+            color: var(--mlerms-navy);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 750;
+            line-height: 1.2;
+            box-shadow: 0 2px 5px rgba(15, 23, 42, .025);
+            transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+        }
+
+        .unit-module-link:hover {
+            transform: translateY(-1px);
+            border-color: #aebbbf;
+            background: #f7faf9;
+            box-shadow: 0 4px 11px rgba(15, 23, 42, .08);
+        }
+
+        .unit-module-link:focus-visible {
+            outline: 2px solid var(--mlerms-green);
+            outline-offset: 2px;
+        }
+
+        .unit-module-link.active {
+            border-color: var(--mlerms-navy);
+            background: linear-gradient(135deg, #202b40, #141d30);
+            color: #fff;
+            box-shadow: 0 6px 14px rgba(23, 32, 51, .22);
+        }
+
+        .unit-module-icon {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #d5dde2;
+            border-radius: 11px;
+            background: #f4f7f8;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+        }
+
+        .unit-module-icon img {
+            display: block;
+            width: 31px;
+            height: 31px;
+            object-fit: contain;
+        }
+
+        .unit-module-link.active .unit-module-icon {
+            border-color: rgba(255,255,255,.32);
+            background: rgba(255,255,255,.12);
+        }
+
+        .unit-module-label {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        .quick-access-back {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 0 0 12px 0;
+        }
+
+        .quick-access-back .back-main-dashboard {
+            position: static;
+            z-index: 2;
+        }
+
+        .page-eyebrow {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--mlerms-green-dark);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.15px;
+            text-transform: uppercase;
+        }
+
+        .page-title h1 {
+            margin: 0;
+            color: var(--mlerms-navy);
+            font-size: 28px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -.25px;
+        }
+
+        .page-title p {
+            margin: 6px 0 0;
+            color: #6c7787;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .back-main-dashboard {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px 18px;
+            min-height: 40px;
+            border: 1px solid #cfd7de;
+            border-radius: 9px;
+            background: #ffffff;
+            color: var(--mlerms-navy);
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+            transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+        }
+
+        .back-main-dashboard:hover {
+            background: #f5f7f9;
+            border-color: #aeb9c3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(15, 23, 42, .08);
+        }
+
+        .back-main-dashboard:focus-visible {
+            outline: 2px solid #7c9a82;
+            outline-offset: 2px;
+        }
+
+        /* =========================================================
+           SECTION TITLE
+           ========================================================= */
+
+        .section-title {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 62px;
+            box-sizing: border-box;
+            margin: 22px 0 14px;
+            padding: 10px 18px 10px 22px;
+            border: 1px solid rgba(218, 225, 231, .98);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .97);
+            box-shadow: 0 3px 10px rgba(15, 23, 42, .055);
+            font-size: 18px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--mlerms-navy);
+            letter-spacing: -.15px;
+        }
+
+        .section-title::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 10px;
+            bottom: 10px;
+            width: 5px;
+            border-radius: 0 999px 999px 0;
+            background: linear-gradient(180deg, var(--mlerms-green), var(--mlerms-orange));
+        }
+
+        .section-title .section-subtitle {
+            display: block;
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            line-height: 1.3;
+            color: #68778a;
+            letter-spacing: 0;
+        }
+
+
+        /* =========================================================
+           PANEL / CARD SYSTEM
+           ========================================================= */
+
+        .dashboard-panel {
+            background: var(--mlerms-surface);
+            border: 1px solid var(--mlerms-border);
+            border-radius: 16px;
+            box-shadow:
+                0 4px 16px rgba(15, 23, 42, .055),
+                0 1px 2px rgba(15, 23, 42, .035);
+            overflow: hidden;
+            min-width: 0;
+        }
+
+        .panel-header {
+            padding: 17px 19px 5px;
+        }
+
+        .panel-title {
+            font-size: 17px;
+            line-height: 1.2;
+            font-weight: 800;
+            color: var(--mlerms-navy);
+        }
+
+        .panel-subtitle {
+            margin-top: 5px;
+            font-size: 11px;
+            color: var(--mlerms-muted);
+        }
+
+        .panel-body {
+            padding: 14px 19px 19px;
+        }
+
+        .panel-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 19px 16px;
+            border-top: 1px solid #eef1f4;
+            font-size: 11px;
+            color: var(--mlerms-muted);
+        }
+
+        .panel-footer strong {
+            color: var(--mlerms-navy);
+            font-weight: 800;
+        }
+
+
+        /* =========================================================
+           QUICK ACCESS / MODULE NAVIGATION
+           ========================================================= */
+
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .module-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            min-height: 86px;
+            padding: 14px 15px;
+            background: #fbfcfc;
+            border: 1px solid #dfe4e7;
+            border-radius: 14px;
+            color: inherit;
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+            border-color: #cbd5d0;
+            box-shadow: 0 7px 16px rgba(15, 23, 42, .07);
+        }
+
+        .module-card-icon {
+            width: 50px;
+            height: 50px;
+            flex: 0 0 50px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .module-card-text {
+            min-width: 0;
+            flex: 1 1 auto;
+        }
+
+        .module-card-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            color: var(--mlerms-navy);
+        }
+
+        .module-card-description {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #7a8493;
+            line-height: 1.3;
+        }
+
+        .module-arrow {
+            flex: 0 0 auto;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--mlerms-navy);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            transition:
+                background .15s ease,
+                transform .15s ease;
+        }
+
+        .module-card:hover .module-arrow {
+            background: var(--mlerms-green-dark);
+            transform: translateX(2px);
+        }
+
+
+        /* =========================================================
+           KPI CARDS — REDESIGNED
+           ========================================================= */
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+            overflow: visible;
+        }
+
+        .kpi-card {
+            --card-accent: var(--accent, #172033);
+            position: relative;
+            min-width: 0;
+            height: 170px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid #dfe4e8;
+            border-radius: 16px;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
+            overflow: visible;
+            z-index: 1;
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
+
+        .kpi-card::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 22px;
+            border-radius: 16px 16px 0 0;
+            background: var(--card-accent);
+            transition: height .18s ease, filter .18s ease;
+        }
+
+        /* Whole-card hover effect, matching the dashboard's interactive cards. */
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            border-color: #cfd7de;
+            box-shadow:
+                0 10px 24px rgba(15, 23, 42, .12),
+                0 2px 6px rgba(15, 23, 42, .05);
+        }
+
+        .kpi-card:hover::before {
+            height: 7px;
+            filter: brightness(1.06);
+        }
+
+        /* Keep the expanded card stable while its detail area is open. */
+        .kpi-card.expanded:hover {
+            transform: translateY(-2px);
+        }
+
+        .kpi-card-header {
+            position: relative;
+            flex: 0 0 116px;
+            box-sizing: border-box;
+            padding: 17px 72px 12px 76px;
+            border-radius: 16px 16px 0 0;
+            background: #ffffff;
+        }
+
+        .kpi-icon {
+            position: absolute;
+            left: 12px;
+            top: 29px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .kpi-icon img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: .7px;
+            text-transform: uppercase;
+            color: var(--card-accent);
+        }
+
+        .kpi-value {
+            margin-top: 10px;
+            font-size: 25px;
+            line-height: 1;
+            font-weight: 800;
+            color: #14213a;
+        }
+
+        .kpi-description {
+            margin-top: 6px;
+            font-size: 13px;
+            line-height: 1.25;
+            color: #718096;
+        }
+
+        .kpi-side-stat {
+            position: absolute;
+            top: 27px;
+            right: 49px;
+            width: 62px;
+            min-width: 62px;
+            padding: 7px 6px 6px;
+            box-sizing: border-box;
+            border-left: 1px solid #e2e7eb;
+            text-align: center;
+            line-height: 1;
+        }
+
+        .kpi-side-stat strong {
+            display: block;
+            font-size: 17px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .kpi-side-stat span {
+            display: block;
+            margin-top: 5px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: .7px;
+            color: #8b95a3;
+        }
+
+        .kpi-toggle {
+            position: absolute;
+            top: 14px;
+            right: 13px;
+            width: 31px;
+            height: 31px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-sizing: border-box;
+            border: 1px solid #d8e0e6;
+            border-radius: 8px;
+            background: #f8fafb;
+            color: #48617a;
+            font-size: 15px;
+            line-height: 1;
+            font-weight: 800;
+            cursor: pointer;
+            transition: .15s ease;
+        }
+
+        .kpi-toggle:hover {
+            background: #eef3f6;
+            border-color: #c7d2da;
+            transform: translateY(-1px);
+        }
+
+        .kpi-toggle:focus-visible {
+            outline: 2px solid #7c9a82;
+            outline-offset: 2px;
+        }
+
+        .kpi-card.expanded {
+            height: 290px;
+            z-index: 9999 !important;
+            border: none;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, .14);
+        }
+
+        .kpi-card.expanded .kpi-toggle {
+            background: var(--card-accent);
+            border-color: var(--card-accent);
+            color: #ffffff;
+            box-shadow: 0 3px 8px rgba(15, 23, 42, .14);
+        }
+
+        .kpi-card.expanded .kpi-toggle:hover {
+            filter: brightness(1.06);
+            transform: translateY(-1px);
+        }
+
+        /* The detail panel is part of the card, not a transparent overlay. */
+        .kpi-list {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 96px;
+            bottom: 0;
+            z-index: 2;
+            box-sizing: border-box;
+            padding: 0 12px 8px;
+            background: #f3f5f7;
+            border-top: 1px solid #e0e5e9;
+            border-radius: 0 0 16px 16px;
+            overflow: hidden;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .kpi-card.expanded .kpi-list {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .kpi-row {
+            min-height: 55px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 6px;
+            border-bottom: 1px solid #edf0f3;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .72);
+        }
+
+        .kpi-row:hover {
+            background: #dfdcdc;
+        }
+
+        .kpi-row-info {
+            min-width: 0;
+        }
+
+        .kpi-row-id {
+            font-size: 11px;
+            line-height: 1.1;
+            font-weight: 800;
+            color: #8a95a3;
+            text-transform: uppercase;
+            letter-spacing: .35px;
+        }
+
+        .kpi-row-name {
+            margin-top: 3px;
+            font-size: 13.5px;
+            line-height: 1.15;
+            font-weight: 700;
+            color: #344054;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .kpi-row-value {
+            flex: 0 0 auto;
+            min-width: 48px;
+            padding: 7px 10px;
+            border-radius: 8px;
+            background: #f7f9fb;
+            border: 1px solid #dfe5ea;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .kpi-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .kpi-list::-webkit-scrollbar-track {
+            background: #f1f3f5;
+            border-radius: 999px;
+        }
+
+        .kpi-list::-webkit-scrollbar-thumb {
+            background: #b6bec7;
+            border-radius: 999px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 22px 8px;
+            color: #9aa1ab;
+            font-size: 12px;
+        }
+
+        .accent-navy {
+            --accent: #172033;
+        }
+
+        .accent-green {
+            --accent: #238b5b;
+        }
+
+        .accent-amber {
+            --accent: #d27a20;
+        }
+
+        .accent-gray {
+            --accent: #7e8990;
+        }
+
+        .accent-darkgreen {
+            --accent: #0f5132;
+        }
+
+        .accent-slate {
+            --accent: #697586;
+        }
+
+        .accent-orange {
+            --accent: #d86f20;
+        }
+
+        .accent-maroon {
+            --accent: #a94a57;
+        }
+
+        /* Unit-dashboard overview: four cards in a 2 × 2 arrangement.
+           Expanded cards increase the row height and push the row below down. */
+        .overview-card-area {
+            overflow: visible !important;
+        }
+
+        .overview-shell .kpi-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: repeat(2, 170px);
+            align-items: start;
+            gap: 10px;
+            height: 350px;
+            margin: 0;
+            overflow: visible !important;
+            isolation: auto;
+        }
+
+        .overview-shell .kpi-card {
+            width: 100%;
+            height: 150px;
+            min-height: 150px;
+            align-self: start;
+        }
+
+        .overview-shell .kpi-card.expanded {
+            height: 250px;
+            min-height: 250px;
+        }
+
+        @media (max-width: 700px) {
+            .kpi-icon {
+                left: 10px;
+                top: 30px;
+                width: 42px;
+                height: 42px;
+            }
+
+            .kpi-icon img {
+                width: 42px;
+                height: 42px;
+            }
+
+            .kpi-card-header {
+                padding-left: 62px;
+            }
+
+            .module-card-icon {
+                width: 44px;
+                height: 44px;
+                flex-basis: 44px;
+            }
+
+            .kpi-side-stat {
+                right: 49px;
+                width: 54px;
+                min-width: 54px;
+            }
+        }
+
+        /* =========================================================
+           ASSET STATUS GAUGE
+           ========================================================= */
+
+        .gauge-wrapper {
+            position: relative;
+            width: 100%;
+            height: 238px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .asset-gauge {
+            width: 100%;
+            max-width: 430px;
+            height: 238px;
+            overflow: visible;
+        }
+
+        .gauge-background {
+            fill: none;
+            stroke: #e4e7eb;
+            stroke-width: 42;
+            stroke-linecap: round;
+        }
+
+        .gauge-segment {
+            fill: none;
+            stroke-width: 42;
+            stroke-linecap: round;
+            cursor: pointer;
+            opacity: 1;
+            transition:
+                stroke-width .18s ease,
+                opacity .18s ease,
+                filter .18s ease;
+        }
+
+        .gauge-segment:hover {
+            stroke-width: 50;
+            filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .22));
+        }
+
+        .gauge-maintenance-overlay {
+            fill: none;
+            stroke-width: 42;
+            stroke-linecap: round;
+            cursor: pointer;
+            opacity: 1;
+            transition:
+                stroke-width .18s ease,
+                opacity .18s ease,
+                filter .18s ease;
+        }
+
+        .gauge-maintenance-overlay:hover {
+            stroke-width: 50;
+            filter: drop-shadow(0 3px 5px rgba(15, 23, 42, .22));
+        }
+
+        .gauge-center-value {
+            font-size: 29px;
+            font-weight: 800;
+            fill: #182235;
+        }
+
+        .gauge-center-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            fill: #7a8493;
+        }
+
+        .gauge-tooltip {
+            position: absolute;
+            left: 50%;
+            top: 12px;
+            transform: translateX(-50%);
+            background: #172033;
+            color: white;
+            border-radius: 7px;
+            padding: 8px 12px;
+            font-size: 12px;
+            line-height: 1.45;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .15s ease;
+            white-space: nowrap;
+            z-index: 5;
+        }
+
+        .gauge-tooltip.show {
+            opacity: 1;
+        }
+
+        .status-legend {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px 12px;
+            margin-top: -2px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex: 0 0 auto;
+        }
+
+        .legend-value {
+            margin-left: auto;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+
+        /* =========================================================
+           BAR CHARTS — UNIFIED ANALYTICS STYLE
+           ========================================================= */
+
+        .condition-bars,
+        .maintenance-bars,
+        .readiness-bars,
+        .inventory-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 10px 2px 6px;
+            height: 100%;
+            justify-content: flex-start;
+        }
+
+        .condition-bars .condition-row,
+        .bar-row,
+        .inventory-bar-row {
+            display: grid;
+            align-items: center;
+            gap: 16px;
+            min-height: 48px;
+            padding: 5px 7px;
+            border-radius: 10px;
+            position: relative;
+            transition: background .18s ease, transform .18s ease;
+        }
+
+        .condition-bars .condition-row {
+            grid-template-columns: 210px minmax(0, 1fr) 78px;
+        }
+
+        .bar-row {
+            grid-template-columns: 210px minmax(0, 1fr) 78px;
+        }
+
+        .inventory-bar-row {
+            grid-template-columns: 210px minmax(0, 1fr) 78px;
+        }
+
+        .condition-bars .condition-row:hover,
+        .bar-row:hover,
+        .inventory-bar-row:hover {
+            background: #f6f8fb;
+            transform: translateX(2px);
+        }
+
+        .condition-bars .bar-label,
+        .bar-label,
+        .inventory-bar-label {
+            min-width: 0;
+            color: #344054;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.25;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
+
+        .inventory-bar-label {
+            font-size: 14px;
+        }
+
+        .condition-bars .bar-track,
+        .bar-track,
+        .inventory-bar-track {
+            position: relative;
+            width: 100%;
+            height: 34px;
+            background: #d9dde1;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .inventory-bar-track {
+            height: 32px;
+        }
+
+        .condition-bars .bar-fill,
+        .bar-fill,
+        .inventory-bar-fill {
+            display: block;
+            width: 0;
+            height: 100%;
+            min-width: 0;
+            border-radius: 999px;
+            transition: width .45s ease, filter .15s ease, transform .15s ease;
+        }
+
+        .condition-bars .condition-row:hover .bar-fill,
+        .bar-row:hover .bar-fill,
+        .inventory-bar-row:hover .inventory-bar-fill {
+            filter: brightness(1.06) saturate(1.08);
+        }
+
+        .condition-value {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: center;
+            line-height: 1.05;
+        }
+
+        .condition-value strong,
+        .bar-value strong {
+            font-size: 16px;
+            font-weight: 800;
+            color: #182235;
+        }
+
+        .condition-value span {
+            margin-top: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #7d8795;
+        }
+
+        .bar-value {
+            text-align: right;
+            font-size: 16px;
+            font-weight: 800;
+            color: #182235;
+            white-space: nowrap;
+        }
+
+        /* FUNCTIONAL COLORS */
+
+        .bar-excellent {
+            background: linear-gradient(90deg, #8fc72b, #b4d84a);
+        }
+
+        .bar-good {
+            background: linear-gradient(90deg, #35a8b5, #63c5cc);
+        }
+
+        .bar-fair {
+            background: linear-gradient(90deg, #e7a22c, #f4ba55);
+        }
+
+        .bar-poor {
+            background: linear-gradient(90deg, #a94a57, #c06b76);
+        }
+
+        .bar-scheduled {
+            background: linear-gradient(90deg, #8f979f, #b8bec4);
+        }
+
+        .bar-in-progress {
+            background: linear-gradient(90deg, #0f5132, #2e7958);
+        }
+
+        .bar-pending {
+            background: linear-gradient(90deg, #d28a20, #e6aa4e);
+        }
+
+        .bar-completed {
+            background: linear-gradient(90deg, #238b5b, #42ad7b);
+        }
+
+        .bar-overdue {
+            background: linear-gradient(90deg, #d86f20, #ed954c);
+        }
+
+        .bar-readiness-availability {
+            background: linear-gradient(90deg, #238b5b, #3eaa78);
+        }
+
+        .bar-readiness-serviceability {
+            background: linear-gradient(90deg, #2878a8, #52a0ca);
+        }
+
+        .bar-readiness-maintenance {
+            background: linear-gradient(90deg, #d27a20, #e9a04b);
+        }
+
+        .bar-readiness-overall {
+            background: linear-gradient(90deg, #435d70, #688494);
+        }
+
+        .bar-readiness-category-1 {
+            background: linear-gradient(90deg, #435d70, #688494);
+        }
+
+        .bar-readiness-category-2 {
+            background: linear-gradient(90deg, #238b5b, #42ad7b);
+        }
+
+        .bar-readiness-category-3 {
+            background: linear-gradient(90deg, #2878a8, #52a0ca);
+        }
+
+        .bar-readiness-category-4 {
+            background: linear-gradient(90deg, #d27a20, #e9a04b);
+        }
+
+        .bar-readiness-category-5 {
+            background: linear-gradient(90deg, #7c5aa6, #9c7cc1);
+        }
+
+        .bar-readiness-category-6 {
+            background: linear-gradient(90deg, #a94a57, #c06b76);
+        }
+
+        .bar-readiness-category-7 {
+            background: linear-gradient(90deg, #2f7f8f, #58a8b5);
+        }
+
+        .bar-readiness-category-8 {
+            background: linear-gradient(90deg, #697586, #8b98a8);
+        }
+
+        .bar-inventory-1 {
+            background: linear-gradient(90deg, #435d70, #688494);
+        }
+
+        .bar-inventory-2 {
+            background: linear-gradient(90deg, #238b5b, #42ad7b);
+        }
+
+        .bar-inventory-3 {
+            background: linear-gradient(90deg, #2878a8, #52a0ca);
+        }
+
+        .bar-inventory-4 {
+            background: linear-gradient(90deg, #d27a20, #e9a04b);
+        }
+
+        .bar-inventory-5 {
+            background: linear-gradient(90deg, #7c5aa6, #9c7cc1);
+        }
+
+        .bar-inventory-6 {
+            background: linear-gradient(90deg, #a94a57, #c06b76);
+        }
+
+        .bar-inventory-7 {
+            background: linear-gradient(90deg, #2f7f8f, #58a8b5);
+        }
+
+        .bar-inventory-8 {
+            background: linear-gradient(90deg, #697586, #8b98a8);
+        }
+
+        .inventory-bar-value {
+            text-align: right;
+            font-size: 16px;
+            font-weight: 800;
+            color: #182235;
+            white-space: nowrap;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 28px 8px;
+            color: #9aa1ab;
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           ANALYTICS GRID
+           ========================================================= */
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .asset-status-overview {
+            margin-bottom: 18px;
+        }
+
+        .asset-status-overview .gauge-wrapper {
+            min-height: 238px;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE / FOOTER
+           ========================================================= */
+
+        .footer {
+            text-align: center;
+            color: #8a929f;
+            font-size: 10px;
+            padding: 24px 0 6px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 1250px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1199.98px) {
+            .module-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .unit-module-nav {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .unit-module-link {
+                min-height: 62px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .unit-hub-top {
+                min-height: 100px;
+            }
+
+            .unit-hub-cover {
+                width: 72%;
+                opacity: .65;
+            }
+
+            .unit-identity {
+                gap: 13px;
+            }
+
+            .unit-logo-badge {
+                width: 58px;
+                height: 58px;
+                flex-basis: 58px;
+            }
+
+            .page-title-main {
+                max-width: none;
+            }
+
+            .unit-hub .page-title-main h1 {
+                font-size: clamp(23px, 2.6vw, 28px);
+                text-wrap: nowrap;
+            }
+
+            .page-title-accent {
+                display: none;
+            }
+
+            .unit-module-nav {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .page-title {
+                min-height: 78px;
+            }
+
+            .page-title-cover {
+                width: 62%;
+                opacity: .72;
+                -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 30%, #000 70%);
+                mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.35) 30%, #000 70%);
+            }
+
+            .page-title-accent {
+                display: none;
+            }
+
+            .back-main-dashboard {
+                padding: 8px 11px;
+                font-size: 11px;
+            }
+
+            .analytics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .unit-hub {
+                padding: 16px 12px 11px;
+                margin-bottom: 16px;
+                border-radius: 15px;
+            }
+
+            .unit-hub-top {
+                min-height: 88px;
+                padding: 0 2px 13px;
+            }
+
+            .unit-hub-cover {
+                width: 100%;
+                height: calc(100% - 75px);
+                opacity: .32;
+                -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.10), #000);
+                mask-image: linear-gradient(90deg, rgba(0,0,0,.10), #000);
+            }
+
+            .unit-identity {
+                align-items: center;
+                gap: 10px;
+            }
+
+            .unit-logo-badge {
+                width: 46px;
+                height: 46px;
+                flex-basis: 46px;
+                padding: 5px;
+                border-radius: 12px;
+            }
+
+            .page-title-main {
+                max-width: 100%;
+            }
+
+            .unit-hub .page-title-main h1 {
+                font-size: clamp(19px, 5vw, 25px);
+                letter-spacing: -.4px;
+                text-wrap: wrap;
+            }
+
+            .unit-hub .page-title-main p {
+                font-size: 10px;
+                margin-top: 6px;
+            }
+
+            .unit-module-nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .unit-module-link {
+                min-height: 56px;
+                padding: 7px 8px;
+                gap: 8px;
+                font-size: 12px;
+            }
+
+            .unit-module-icon {
+                width: 34px;
+                height: 34px;
+                flex-basis: 34px;
+                border-radius: 9px;
+            }
+
+            .unit-module-icon img {
+                width: 25px;
+                height: 25px;
+            }
+
+            .condition-bars .condition-row,
+            .bar-row,
+            .inventory-bar-row {
+                grid-template-columns: 120px minmax(0, 1fr) 58px;
+                gap: 10px;
+            }
+
+            .condition-bars .bar-label,
+            .bar-label,
+            .inventory-bar-label {
+                font-size: 13px;
+            }
+
+            .condition-bars .bar-track,
+            .bar-track,
+            .inventory-bar-track {
+                height: 29px;
+            }
+
+            .page-title {
+                padding: 15px 16px;
+                margin-bottom: 14px;
+            }
+
+            .page-title h1 {
+                font-size: 23px;
+            }
+
+            .module-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .bar-row {
+                grid-template-columns: 110px minmax(0, 1fr) 48px;
+            }
+
+            .status-legend {
+                grid-template-columns: 1fr;
+            }
+        }
+
+
+        /* =========================================================
+           OVERVIEW SECTION LAYOUT — REPORT STYLE
+           ========================================================= */
+
+        .overview-shell {
+            display: grid;
+            grid-template-columns: minmax(0, 1.42fr) minmax(0, .71fr) minmax(0, .71fr);
+            grid-template-rows: auto;
+            gap: 10px;
+            padding: 0;
+            margin-bottom: 22px;
+            background: transparent;
+            border-radius: 0;
+            min-width: 0;
+            min-height: 310px;
+            align-items: stretch;
+
+            /* Each overview section gets its own stacking layer.
+               This prevents an expanded card from appearing underneath
+               the next overview section. */
+            position: relative;
+            z-index: 1;
+        }
+
+        /* When any KPI card is expanded, raise the entire section above
+           the following sections so the expanded card remains visible. */
+        .overview-shell:has(.kpi-card.expanded) {
+            z-index: 1000;
+        }
+
+        .overview-chart-panel {
+            grid-column: 1;
+            grid-row: auto;
+            width: 100%;
+            height: 330px;
+            min-width: 0;
+            min-height: 330px;
+            background: #ffffff;
+            border: 1px solid #e1e5ea;
+            border-radius: 14px;
+            box-shadow:
+                0 2px 7px rgba(15, 23, 42, .035);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-self: start;
+        }
+
+        .chart-panel-controls {
+            padding: 8px 10px 0;
+        }
+
+        .chart-panel-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: #111111;
+        }
+
+        .chart-panel-subtitle {
+            margin-top: 5px;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .overview-panel-heading {
+            padding: 15px 18px 10px;
+            border-bottom: 1px solid #e8edf0;
+            background: #ffffff;
+        }
+
+        .overview-panel-title {
+            color: var(--mlerms-navy);
+            font-size: 18px;
+            line-height: 1.2;
+            font-weight: 850;
+            letter-spacing: -.2px;
+        }
+
+        .overview-panel-subtitle {
+            margin-top: 4px;
+            color: #718096;
+            font-size: 11px;
+            line-height: 1.35;
+        }
+
+        .maintenance-overview-heading {
+            padding: 14px 18px 10px;
+            border-bottom: 1px solid #e8edf0;
+            background: #ffffff;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .chart-tabs {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            padding: 10px 12px 0;
+            width: 100%;
+        }
+
+        .chart-tab {
+            appearance: none;
+            flex: 1 1 0;
+            min-width: 0;
+            border: 1px solid #d1d5db;
+            border-radius: 999px;
+            background: #ffffff;
+            color: #374151;
+            padding: 9px 14px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.15;
+            text-align: center;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background .15s ease, border-color .15s ease, color .15s ease;
+        }
+
+        .chart-tab.active {
+            background: #172033;
+            border-color: #172033;
+            color: #ffffff;
+        }
+
+        .overview-chart-body {
+            flex: 1;
+            min-height: 0;
+            padding: 8px 24px 14px;
+            overflow: hidden;
+        }
+
+        /* Maintenance / Readiness / Inventory charts can contain any number of rows.
+           Keep the card height fixed and scroll inside the chart body when needed. */
+        .overview-chart-panel.scrollable-chart .overview-chart-body {
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: thin;
+            scrollbar-color: #aeb7bf #eef1f3;
+        }
+
+        .overview-chart-panel.scrollable-chart .overview-chart-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .overview-chart-panel.scrollable-chart .overview-chart-body::-webkit-scrollbar-track {
+            background: #eef1f3;
+            border-radius: 999px;
+        }
+
+        .overview-chart-panel.scrollable-chart .overview-chart-body::-webkit-scrollbar-thumb {
+            background: #aeb7bf;
+            border-radius: 999px;
+        }
+
+        .overview-chart-panel.scrollable-chart .overview-chart-body::-webkit-scrollbar-thumb:hover {
+            background: #89949e;
+        }
+
+        .chart-view {
+            height: 100%;
+            min-height: 205px;
+            overflow: hidden;
+        }
+
+        .chart-view.hidden {
+            display: none !important;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] .gauge-wrapper {
+            order: 2;
+            width: 62%;
+            min-height: 220px;
+            height: 220px;
+            flex: 0 0 62%;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] .asset-gauge {
+            height: 220px;
+            max-width: 420px;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] .status-legend {
+            order: 1;
+            width: 38%;
+            max-height: none;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 0;
+            padding-left: 4px;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] .legend-item {
+            font-size: 14px;
+            line-height: 1.25;
+        }
+
+        .overview-chart-panel .chart-view[data-chart-view="asset-status"] .legend-dot {
+            width: 11px;
+            height: 11px;
+        }
+
+        .overview-chart-panel .condition-bars,
+        .overview-chart-panel .maintenance-bars,
+        .overview-chart-panel .readiness-bars,
+        .overview-chart-panel .inventory-bars {
+            padding-top: 4px;
+        }
+
+        .overview-card-area {
+            grid-column: 2 / span 2;
+            grid-row: 1;
+            min-width: 0;
+            height: auto;
+            align-self: stretch;
+        }
+
+        .overview-shell .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-rows: auto auto;
+            align-items: start;
+            gap: 10px;
+            margin: 0;
+            height: auto;
+        }
+
+        .overview-shell .kpi-card {
+            min-width: 0;
+            min-height: 150px;
+            height: 150px;
+            align-self: start;
+            position: relative;
+        }
+
+        .overview-shell .kpi-grid {
+            position: relative;
+            isolation: isolate;
+        }
+
+        /* Expanded cards increase their grid row height, so the row below
+           moves downward instead of being covered by the expanded card. */
+        .overview-shell .kpi-card.expanded {
+            height: 290px;
+            min-height: 290px;
+            z-index: 9999 !important;
+        }
+
+        /* Inventory uses the same bar geometry, spacing and interaction as the other overview charts. */
+        .inventory-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 10px 2px 6px;
+        }
+
+        .inventory-bar-row {
+            display: grid;
+            grid-template-columns: 210px minmax(0, 1fr) 78px;
+            align-items: center;
+            gap: 16px;
+            min-height: 48px;
+            padding: 5px 7px;
+            border-radius: 10px;
+            position: relative;
+            transition: background .18s ease, transform .18s ease;
+        }
+
+        .inventory-bar-row:hover {
+            background: #f6f8fb;
+            transform: translateX(2px);
+        }
+
+        .inventory-bar-label {
+            min-width: 0;
+            color: #344054;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.25;
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+        }
+
+        .inventory-bar-track {
+            position: relative;
+            width: 100%;
+            height: 34px;
+            background: #d9dde1;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .inventory-bar-fill {
+            display: block;
+            width: 0;
+            height: 100%;
+            min-width: 0;
+            border-radius: 999px;
+            transition: width .45s ease, filter .15s ease, transform .15s ease;
+        }
+
+        .inventory-bar-row:hover .inventory-bar-fill {
+            filter: brightness(1.06) saturate(1.08);
+        }
+
+        .inventory-bar-value {
+            text-align: right;
+            font-size: 15px;
+            font-weight: 800;
+            color: #182235;
+        }
+
+        @media (max-width: 900px) {
+            .overview-shell {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .overview-chart-panel,
+            .overview-card-area {
+                grid-column: 1;
+                grid-row: auto;
+            }
+
+            .overview-chart-panel {
+                height: 360px;
+                min-height: 360px;
+            }
+
+            .overview-card-area {
+                height: auto;
+            }
+
+            .overview-shell .kpi-grid {
+                height: auto;
+                grid-template-rows: auto auto;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .overview-shell .kpi-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .chart-tabs {
+                gap: 7px;
+                flex-wrap: wrap;
+            }
+        }
+    
+
+        /* Final polish: larger unit navigation and consistent overview card geometry */
+        .unit-module-nav {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 11px;
+            padding-top: 13px;
+        }
+
+        .unit-module-link {
+            min-height: 72px;
+            padding: 10px 14px;
+            gap: 12px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 750;
+            letter-spacing: -.15px;
+        }
+
+        .unit-module-icon {
+            width: 46px;
+            height: 46px;
+            flex-basis: 46px;
+            border-radius: 12px;
+        }
+
+        .unit-module-icon img {
+            width: 34px;
+            height: 34px;
+        }
+
+        .unit-module-link.active {
+            box-shadow: 0 7px 16px rgba(23, 32, 51, .22);
+        }
+
+        /* Keep overview cards aligned when collapsed, but let the grid grow
+           naturally when a KPI card expands so the row below moves down. */
+        .overview-shell {
+            align-items: stretch;
+            grid-template-rows: auto;
+        }
+
+        .overview-chart-panel {
+            box-sizing: border-box;
+            height: 100%;
+            min-height: 350px;
+            align-self: stretch;
+        }
+
+        .overview-card-area {
+            min-height: 0;
+            height: auto;
+            align-self: stretch;
+        }
+
+        .overview-shell .kpi-grid {
+            box-sizing: border-box;
+            grid-template-rows: auto auto;
+            height: auto;
+            min-height: 0;
+            gap: 10px;
+            align-content: start;
+            align-items: start;
+        }
+
+        .overview-shell .kpi-card {
+            box-sizing: border-box;
+            height: 150px;
+            min-height: 150px;
+            align-self: start;
+        }
+
+        .overview-shell .kpi-card.expanded {
+            height: 290px;
+            min-height: 290px;
+        }
+
+        @media (max-width: 1100px) {
+            .unit-module-link {
+                min-height: 68px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .overview-chart-panel {
+                height: auto;
+                min-height: 350px;
+            }
+
+            .overview-card-area {
+                height: auto;
+                min-height: 0;
+            }
+
+            .overview-shell .kpi-grid {
+                height: auto;
+                min-height: 0;
+                grid-template-rows: auto auto;
+                align-content: start;
+            }
+
+            .overview-shell .kpi-card {
+                height: 170px;
+                min-height: 170px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .unit-module-nav {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+
+            .unit-module-link {
+                min-height: 60px;
+                padding: 8px 9px;
+                gap: 8px;
+                font-size: 13px;
+            }
+
+            .unit-module-icon {
+                width: 36px;
+                height: 36px;
+                flex-basis: 36px;
+            }
+
+            .unit-module-icon img {
+                width: 27px;
+                height: 27px;
+            }
+        }
+
+
+        /* Center the four-card KPI group vertically against the large chart card.
+           Natural grid sizing is preserved so expanded cards still push sections down. */
+        @media (min-width: 901px) {
+            .overview-card-area {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-self: stretch;
+                min-width: 0;
+                height: 100%;
+            }
+
+            .overview-shell .kpi-grid {
+                width: 100%;
+                margin-block: 0;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .overview-card-area {
+                display: block;
+                height: auto;
+            }
+        }
+
+
+        /* Dashboard active state: match the navy header with a restrained MLERMS orange accent. */
+        .unit-module-link.active {
+            position: relative;
+            overflow: hidden;
+            border-color: #26354d;
+            background: linear-gradient(135deg, #202b40 0%, #172033 62%, #111a2b 100%);
+            color: #ffffff;
+            box-shadow: 0 7px 17px rgba(17, 26, 43, .22), inset 0 1px 0 rgba(255,255,255,.12);
+        }
+
+        .unit-module-link.active::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 12px;
+            bottom: 12px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+            background: linear-gradient(180deg, #ff8b2b, #f26b21);
+            box-shadow: 1px 0 7px rgba(242, 107, 33, .22);
+        }
+
+        .unit-module-link.active .unit-module-icon {
+            border-color: rgba(255,255,255,.46);
+            background: rgba(255,255,255,.14);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.17), 0 2px 6px rgba(0,0,0,.08);
+        }
+
+        .unit-module-link.active .unit-module-icon img {
+            object-fit: contain;
+        }
+
+        /* Keep the selected Dashboard button dark on hover; do not let the
+           generic light-button hover style override the active state. */
+        .unit-module-link.active:hover {
+            border-color: #344764;
+            background: linear-gradient(135deg, #293951 0%, #1c2940 62%, #151f32 100%);
+            color: #ffffff;
+            transform: translateY(-2px) scale(1.025);
+            box-shadow: 0 10px 22px rgba(17, 26, 43, .29), inset 0 1px 0 rgba(255,255,255,.16);
+        }
+
+        .unit-module-link.active:hover .unit-module-icon {
+            background: rgba(255,255,255,.19);
+            border-color: rgba(255,255,255,.58);
+        }
+
+        .unit-module-link.active:active {
+            transform: translateY(0) scale(1.005);
+            box-shadow: 0 4px 10px rgba(17, 26, 43, .22);
+        }
+
+        /* Readiness by Category: responsive 3D column chart. */
+        .overview-chart-panel .readiness-bars.readiness-3d-chart {
+            display: flex;
+            flex-direction: column;
+            justify-content: stretch;
+            gap: 0;
+            height: 100%;
+            min-height: 235px;
+            box-sizing: border-box;
+            padding: 8px 14px 12px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        .readiness-3d-plot {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(var(--column-count, 4), minmax(62px, 1fr));
+            align-items: end;
+            gap: clamp(10px, 2.1vw, 25px);
+            min-width: max(100%, calc(var(--column-count, 4) * 76px));
+            flex: 1 1 auto;
+            padding: 20px 10px 0;
+            border-bottom: 1px solid #cbd5dc;
+            background-image: repeating-linear-gradient(
+                to top,
+                transparent 0,
+                transparent calc(25% - 1px),
+                rgba(148, 163, 184, .20) calc(25% - 1px),
+                rgba(148, 163, 184, .20) 25%
+            );
+            perspective: 850px;
+        }
+
+        .readiness-3d-column {
+            min-width: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            position: relative;
+        }
+
+        .readiness-3d-value {
+            margin-bottom: 7px;
+            color: #263449;
+            font-size: 12px;
+            line-height: 1;
+            font-weight: 850;
+            white-space: nowrap;
+        }
+
+        .readiness-3d-bar-area {
+            height: 74%;
+            width: 100%;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            min-height: 1px;
+        }
+
+        .readiness-3d-bar {
+            position: relative;
+            width: clamp(28px, 4.1vw, 46px);
+            min-height: 3px;
+            height: var(--bar-height, 0%);
+            max-height: 100%;
+            border-radius: 3px 0 0 0;
+            background: linear-gradient(90deg, var(--bar-light, #42ad7b) 0%, var(--bar-color, #238b5b) 72%, var(--bar-color, #238b5b) 100%);
+            box-shadow: inset 1px 0 0 rgba(255,255,255,.35), 0 3px 7px rgba(15, 23, 42, .12);
+            transform: translateZ(0);
+            transform-style: preserve-3d;
+            transition: height .35s ease, filter .2s ease;
+        }
+
+        .readiness-3d-bar::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: -12px;
+            width: 12px;
+            height: 100%;
+            background: var(--bar-side, #176447);
+            clip-path: polygon(0 0, 100% 8px, 100% 100%, 0 100%);
+            transform: skewY(-8deg);
+            transform-origin: left top;
+        }
+
+        .readiness-3d-bar::after {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: var(--bar-light, #42ad7b);
+            clip-path: polygon(0 100%, 12px 0, 100% 0, 100% 100%);
+            transform: skewX(-42deg);
+            transform-origin: bottom left;
+            filter: brightness(1.08);
+        }
+
+        .readiness-3d-column:hover .readiness-3d-bar {
+            filter: brightness(1.06);
+        }
+
+        .readiness-3d-label {
+            width: 100%;
+            min-height: 34px;
+            margin-top: 14px;
+            padding: 0 2px;
+            color: #526174;
+            font-size: 10px;
+            line-height: 1.25;
+            font-weight: 700;
+            text-align: center;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 700px) {
+            .overview-chart-panel .readiness-bars.readiness-3d-chart {
+                padding-inline: 8px;
+            }
+
+            .readiness-3d-plot {
+                gap: 16px;
+                min-width: max(100%, calc(var(--column-count, 4) * 68px));
+            }
+
+            .readiness-3d-label {
+                font-size: 9px;
+            }
+        }
+
+
+        .unit-home-link {
+            position: relative;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            flex: 0 0 auto;
+            min-height: 42px;
+            padding: 10px 15px;
+            border: 1px solid rgba(255,255,255,.82);
+            border-radius: 11px;
+            background: rgba(255,255,255,.94);
+            color: var(--mlerms-navy);
+            box-shadow: 0 4px 14px rgba(15,23,42,.12);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+            backdrop-filter: blur(8px);
+            transition: transform .16s ease, background .16s ease, box-shadow .16s ease;
+        }
+        .unit-home-link:hover {
+            transform: translateY(-1px);
+            background: #fff;
+            box-shadow: 0 7px 18px rgba(15,23,42,.17);
+        }
+        .unit-home-link:focus-visible {
+            outline: 3px solid var(--mlerms-green);
+            outline-offset: 3px;
+        }
+        .unit-home-link .back-arrow {
+            font-size: 18px;
+            line-height: 1;
+        }
+
+
+        /* V12: refined navigation hover feedback and a more discoverable return link */
+        .unit-module-nav {
+            align-items: stretch;
+        }
+
+        .unit-module-link {
+            position: relative;
+            z-index: 1;
+            transform: translateY(0) scale(1);
+            transform-origin: center;
+            transition:
+                transform .18s cubic-bezier(.2,.75,.25,1),
+                background .18s ease,
+                border-color .18s ease,
+                box-shadow .18s ease,
+                color .18s ease;
+            will-change: transform;
+        }
+
+        .unit-module-link:hover {
+            z-index: 3;
+            transform: translateY(-3px) scale(1.015);
+            border-color: #b6c4cf;
+            background: #ffffff;
+            box-shadow: 0 9px 20px rgba(19, 33, 52, .13);
+        }
+
+        .unit-module-link:hover .unit-module-icon {
+            transform: scale(1.045);
+            box-shadow: 0 3px 9px rgba(15, 23, 42, .10), inset 0 1px 0 rgba(255,255,255,.85);
+        }
+
+        .unit-module-icon {
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .unit-module-link.active {
+            z-index: 2;
+            transform: translateY(-1px) scale(1.025);
+            border-color: #26354d;
+            box-shadow: 0 9px 20px rgba(17, 26, 43, .23), inset 0 1px 0 rgba(255,255,255,.12);
+        }
+
+        .unit-module-link.active:hover {
+            transform: translateY(-4px) scale(1.035);
+            box-shadow: 0 12px 24px rgba(17, 26, 43, .28), inset 0 1px 0 rgba(255,255,255,.12);
+        }
+
+        .unit-module-link:active {
+            transform: translateY(0) scale(.99);
+        }
+
+        .unit-module-link:focus-visible {
+            outline: 3px solid rgba(242, 107, 33, .8);
+            outline-offset: 3px;
+        }
+
+        .unit-home-link {
+            position: relative;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 0 0 auto;
+            min-height: 46px;
+            padding: 10px 17px 10px 12px;
+            border: 1px solid rgba(255, 255, 255, .42);
+            border-left: 4px solid #f26b21;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #202b40 0%, #172033 68%, #111a2b 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .24), inset 0 1px 0 rgba(255,255,255,.12);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: .05px;
+            white-space: nowrap;
+            transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease;
+        }
+
+        .unit-home-link::after {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border: 1px solid rgba(242, 107, 33, .35);
+            border-radius: 15px;
+            pointer-events: none;
+            opacity: .75;
+        }
+
+        .unit-home-link:hover {
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, .7);
+            background: linear-gradient(135deg, #2a3a53 0%, #1a2940 68%, #152239 100%);
+            color: #ffffff;
+            box-shadow: 0 12px 25px rgba(15, 23, 42, .30), inset 0 1px 0 rgba(255,255,255,.16);
+        }
+
+        .unit-home-link:active {
+            transform: translateY(0);
+        }
+
+        .unit-home-link:focus-visible {
+            outline: 3px solid #f26b21;
+            outline-offset: 5px;
+        }
+
+        .unit-home-link .back-arrow {
+            display: inline-grid;
+            place-items: center;
+            width: 25px;
+            height: 25px;
+            border: 1px solid rgba(255,255,255,.3);
+            border-radius: 8px;
+            background: rgba(255,255,255,.10);
+            color: #ffffff;
+            font-size: 18px;
+            line-height: 1;
+            transition: transform .18s ease, background .18s ease;
+        }
+
+        .unit-home-link:hover .back-arrow {
+            transform: translateX(-2px);
+            background: rgba(255,255,255,.17);
+        }
+
+        @media (max-width: 900px) {
+            .unit-module-link.active {
+                transform: none;
+            }
+            .unit-module-link.active:hover {
+                transform: translateY(-2px);
+            }
+            .unit-home-link {
+                min-height: 42px;
+                padding: 8px 12px 8px 9px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .unit-module-link:hover {
+                transform: translateY(-2px);
+            }
+            .unit-module-link.active {
+                transform: none;
+            }
+            .unit-module-link.active:hover {
+                transform: translateY(-2px);
+            }
+            .unit-home-link {
+                gap: 7px;
+                min-height: 38px;
+                padding: 7px 10px 7px 8px;
+                font-size: 11px;
+                border-radius: 10px;
+            }
+            .unit-home-link .back-arrow {
+                width: 22px;
+                height: 22px;
+                font-size: 16px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .unit-module-link,
+            .unit-module-icon,
+            .unit-home-link,
+            .unit-home-link .back-arrow {
+                transition: none !important;
+            }
+        }
+
+</style>
+{% endblock %}
+
+{% block content %}
+        <!-- =====================================================
+         PAGE TITLE
+         ===================================================== -->
+        <!-- Unified unit identity banner and module navigation -->
+        <section class="unit-hub" aria-label="Unit overview and navigation">
+            <img
+                class="unit-hub-cover"
+                src="{{ url_for('static', filename='images/cover/' ~ (selected_unit['unit_id'] | lower | replace('-', '_')) ~ '_cover.png') }}"
+                alt=""
+                aria-hidden="true"
+                onerror="this.style.display='none';"
+            />
+
+            <div class="unit-hub-top">
+                <div class="unit-identity">
+                    <div class="unit-logo-badge" aria-label="Unit insignia">
+                        <img
+                            src="{{ url_for('static', filename='images/units/' ~ (selected_unit['unit_id'] | lower | replace('-', '_')) ~ '.png') }}"
+                            alt="{{ selected_unit['unit_name'] }} logo"
+                            onerror="this.closest('.unit-logo-badge').style.display='none';"
+                        >
+                    </div>
+                    <div class="page-title-main">
+                        <span class="page-eyebrow">MLERMS / UNIT DASHBOARD</span>
+                        <h1>{{ selected_unit['unit_name'] }}</h1>
+                        <p>Unit ID {{ selected_unit['unit_id'] }} — unit-level operational overview</p>
+                    </div>
+                </div>
+                <a class="unit-home-link" href="/" aria-label="Return to the main dashboard">
+                    <span class="back-arrow" aria-hidden="true">←</span>
+                    <span>Main Dashboard</span>
+                </a>
+            </div>
+
+            <nav class="unit-module-nav" aria-label="Unit management modules">
+                <a class="unit-module-link active" href="#" aria-current="page">
+                    <span class="unit-module-icon dashboard-module-icon" aria-hidden="true">
+                        <img src="{{ url_for('static', filename='images/dashboard/dashboard.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Dashboard</span>
+                </a>
+
+                <a class="unit-module-link" href="{{ url_for('assets.unit_assets', unit_id=selected_unit['unit_id']) }}">
+                    <span class="unit-module-icon">
+                        <img src="{{ url_for('static', filename='images/dashboard/asset_management.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Asset Management</span>
+                </a>
+
+                <a class="unit-module-link" href="{{ url_for('maintenance.unit_maintenance', unit_id=selected_unit['unit_id']) }}">
+                    <span class="unit-module-icon">
+                        <img src="{{ url_for('static', filename='images/dashboard/maintenance.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Maintenance</span>
+                </a>
+
+                <a class="unit-module-link" href="/inventory/">
+                    <span class="unit-module-icon">
+                        <img src="{{ url_for('static', filename='images/dashboard/inventory.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Inventory</span>
+                </a>
+
+                <a class="unit-module-link" href="{{ url_for('readiness.unit_readiness', unit_id=selected_unit['unit_id']) }}">
+                    <span class="unit-module-icon">
+                        <img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Readiness</span>
+                </a>
+
+                <a class="unit-module-link" href="{{ url_for('audit.audit_home') }}">
+                    <span class="unit-module-icon">
+                        <img src="{{ url_for('static', filename='images/dashboard/audit_and_reporting.png') }}" alt="">
+                    </span>
+                    <span class="unit-module-label">Audit &amp; Reporting</span>
+                </a>
+
+            </nav>
+        </section>
+        <div class="overview-shell">
+            <div class="overview-chart-panel">
+                <div class="overview-panel-heading">
+                    <div class="overview-panel-title">Asset Overview</div>
+                    <div class="overview-panel-subtitle">Asset status, condition and operational distribution</div>
+                </div>
+                <div class="chart-tabs"><button class="chart-tab active" data-chart-view="asset-status"
+                        type="button">Asset Status analysis chart</button><button class="chart-tab"
+                        data-chart-view="condition" type="button">Equipment Condition</button></div>
+                <div class="overview-chart-body">
+                    <div class="chart-view" data-chart-view="asset-status">
+                        <div class="gauge-wrapper">
+                            <div class="gauge-tooltip" id="statusGaugeTooltip"></div>
+                            <svg aria-label="Asset status gauge" class="asset-gauge" id="statusGauge"
+                                viewbox="0 0 400 255">
+                                <path class="gauge-background" d="M 55 205 A 145 145 0 0 1 345 205"></path>
+                                <text class="gauge-center-value" id="statusGaugeCenterValue" text-anchor="middle"
+                                    x="200" y="164">0</text>
+                                <text class="gauge-center-label" text-anchor="middle" x="200" y="188">TOTAL
+                                    ASSETS</text>
+                            </svg>
+                        </div>
+                        <div class="status-legend" id="statusLegend"></div>
+                    </div>
+                    <div class="chart-view hidden" data-chart-view="condition">
+                        <div class="condition-bars" id="conditionBars"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="overview-card-area">
+                <div class="kpi-grid">
+
+                    <div class="kpi-card accent-green">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/operational.png') }}" alt="Operational"></div>
+                            <div class="kpi-label">Operational</div>
+                            <div class="kpi-value">{{ summary['operational_assets'] }}</div>
+                            <div class="kpi-description">Currently operational</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['operational_assets'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['operational_assets'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No operational assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <div class="kpi-card accent-amber">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/non_operational.png') }}" alt="Non-Operational"></div>
+                            <div class="kpi-label">Non-Operational</div>
+                            <div class="kpi-value">{{ summary['non_operational_assets'] }}</div>
+                            <div class="kpi-description">Maintenance equipment</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['non_operational_assets'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['non_operational_assets'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No non-operational assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <div class="kpi-card accent-gray">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/decommissioned.png') }}" alt="Decommissioned"></div>
+                            <div class="kpi-label">Decommissioned</div>
+                            <div class="kpi-value">{{ summary['decommissioned_assets'] }}</div>
+                            <div class="kpi-description">Equipment decommissioned</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['decommissioned_assets'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['decommissioned_assets'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No decommissioned assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                    <div class="kpi-card accent-darkgreen">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/under_maintenance.png') }}" alt="Under Maintenance"></div>
+                            <div class="kpi-label">Under Maintenance</div>
+                            <div class="kpi-value">{{ summary['under_maintenance_assets'] }}</div>
+                            <div class="kpi-description">Equipment currently under maintenance</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['under_maintenance'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['under_maintenance'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No equipment under maintenance.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+
+        <div class="overview-shell">
+            <div class="overview-chart-panel scrollable-chart">
+                <div class="overview-panel-heading">
+                    <div class="overview-panel-title">Maintenance Overview</div>
+                    <div class="overview-panel-subtitle">Current maintenance activity and status</div>
+                </div>
+                <div class="chart-panel-controls">
+                    <div class="chart-panel-title">Maintenance Status</div>
+                </div>
+                <div class="overview-chart-body">
+                    <div class="maintenance-bars" id="maintenanceBars"></div>
+                </div>
+            </div>
+            <div class="overview-card-area">
+                <div class="kpi-grid">
+                    <div class="kpi-card accent-darkgreen">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/under_maintenance.png') }}" alt="Under Maintenance"></div>
+                            <div class="kpi-label">Under Maintenance</div>
+                            <div class="kpi-value">{{ summary['under_maintenance_assets'] }}</div>
+                            <div class="kpi-description">Equipment currently under maintenance</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['under_maintenance'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['under_maintenance'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No equipment under maintenance.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-slate">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/scheduled.png') }}" alt="Scheduled"></div>
+                            <div class="kpi-label">Scheduled</div>
+                            <div class="kpi-value">{{ maintenance_summary['scheduled_maintenance'] }}</div>
+                            <div class="kpi-description">Scheduled maintenance records</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['scheduled'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['scheduled'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No scheduled maintenance.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-darkgreen">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/in_progress.png') }}" alt="In Progress"></div>
+                            <div class="kpi-label">In Progress</div>
+                            <div class="kpi-value">{{ maintenance_summary['in_progress_maintenance'] }}</div>
+                            <div class="kpi-description">Maintenance currently in progress</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['in_progress'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['in_progress'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No maintenance in progress.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-orange">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/overdue.png') }}" alt="Overdue"></div>
+                            <div class="kpi-label">Overdue</div>
+                            <div class="kpi-value">{{ maintenance_summary['overdue_maintenance'] }}</div>
+                            <div class="kpi-description">Maintenance past its due date</div>
+                            <div class="kpi-side-stat"><strong>{{ asset_details['overdue'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in asset_details['overdue'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ asset['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No overdue maintenance.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overview-shell">
+            <div class="overview-chart-panel scrollable-chart">
+                <div class="overview-panel-heading">
+                    <div class="overview-panel-title">Readiness Overview</div>
+                    <div class="overview-panel-subtitle">Equipment readiness and classification overview</div>
+                </div>
+                <div class="chart-panel-controls">
+                    <div class="chart-panel-title">Readiness by Category</div>
+                    
+                </div>
+                <div class="overview-chart-body">
+                    <div class="readiness-bars" id="readinessBars"></div>
+                </div>
+            </div>
+            <div class="overview-card-area">
+                <div class="kpi-grid">
+                    <div class="kpi-card accent-navy">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/avg_readiness.png') }}" alt="Unit Readiness"></div>
+                            <div class="kpi-label">Unit Readiness</div>
+                            <div class="kpi-value">{{ "%.2f"|format(readiness_summary['readiness_score']) }}%</div>
+                            <div class="kpi-description">Overall readiness score</div>
+                            <div class="kpi-side-stat"><strong>{{ readiness_assets | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">Classification</div>
+                                    <div class="kpi-row-name">{{ readiness_summary['classification'] }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-green">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt="Fully Ready"></div>
+                            <div class="kpi-label">Fully Ready</div>
+                            <div class="kpi-value">
+                                {{ readiness_assets | selectattr('classification', 'equalto', 'Fully Ready') | list |
+                                length }}
+                            </div>
+                            <div class="kpi-description">Assets classified as fully ready</div>
+                            <div class="kpi-side-stat"><strong>{{ readiness_assets | selectattr('classification',
+                                    'equalto', 'Fully Ready') | list | length }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in readiness_assets if asset['classification'] == 'Fully Ready' %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ "%.2f"|format(asset['readiness_score']) }}%</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No fully ready assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-amber">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt="Limited Readiness"></div>
+                            <div class="kpi-label">Limited Readiness</div>
+                            <div class="kpi-value">
+                                {{ readiness_assets | selectattr('classification', 'equalto', 'Limited Readiness') |
+                                list | length }}
+                            </div>
+                            <div class="kpi-description">Assets requiring attention</div>
+                            <div class="kpi-side-stat"><strong>{{ readiness_assets | selectattr('classification',
+                                    'equalto', 'Limited Readiness') | list | length }}</strong><span>RECORDS</span>
+                            </div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in readiness_assets if asset['classification'] == 'Limited Readiness' %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ "%.2f"|format(asset['readiness_score']) }}%</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No limited-readiness assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-maroon">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt="Not Ready"></div>
+                            <div class="kpi-label">Not Ready</div>
+                            <div class="kpi-value">
+                                {{ readiness_assets | selectattr('classification', 'equalto', 'Not Ready') | list |
+                                length }}
+                            </div>
+                            <div class="kpi-description">Assets classified as not ready</div>
+                            <div class="kpi-side-stat"><strong>{{ readiness_assets | selectattr('classification',
+                                    'equalto', 'Not Ready') | list | length }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for asset in readiness_assets if asset['classification'] == 'Not Ready' %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ asset['asset_type_id'] }}</div>
+                                    <div class="kpi-row-name">{{ asset['asset_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ "%.2f"|format(asset['readiness_score']) }}%</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No not-ready assets.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="overview-shell">
+            <div class="overview-chart-panel scrollable-chart">
+                <div class="overview-panel-heading">
+                    <div class="overview-panel-title">Inventory Overview</div>
+                    <div class="overview-panel-subtitle">Stock levels, inventory value and availability</div>
+                </div>
+                <div class="chart-panel-controls">
+                    <div class="chart-panel-title">Stock Levels by Category</div>
+                    
+                </div>
+                <div class="overview-chart-body">
+                    <div class="inventory-bars" id="inventoryBars"></div>
+                </div>
+            </div>
+            <div class="overview-card-area">
+                <div class="kpi-grid">
+                    <div class="kpi-card accent-navy">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/total_inventory.png') }}" alt="Total Inventory"></div>
+                            <div class="kpi-label">Total Inventory</div>
+                            <div class="kpi-value">{{ inventory_summary['total_items'] }}</div>
+                            <div class="kpi-description">Different inventory items</div>
+                            <div class="kpi-side-stat"><strong>{{ inventory_summary['details'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for item in inventory_summary['details'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ item['category'] }}</div>
+                                    <div class="kpi-row-name">{{ item['item_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ item['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No inventory items.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-green">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/total_inventory.png') }}" alt="Total Stock"></div>
+                            <div class="kpi-label">Total Stock</div>
+                            <div class="kpi-value">{{ inventory_summary['total_quantity'] }}</div>
+                            <div class="kpi-description">Items currently in stock</div>
+                            <div class="kpi-side-stat"><strong>{{ inventory_summary['details'] | length
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for item in inventory_summary['details'] %}
+
+                            <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">{{ item['item_name'] }}</div>
+                                    <div class="kpi-row-name">{{ item['unit'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ item['quantity'] }}</div>
+                            </div>
+
+                            {% else %}
+
+                            <div class="empty-state">No stock available.</div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                    <div class="kpi-card accent-orange">
+                        <div class="kpi-card-header">
+                            <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/low_stock.png') }}" alt="Low Stock"></div>
+                            <div class="kpi-label">Low Stock</div>
+                            <div class="kpi-value">{{ inventory_summary['low_stock_items'] }}</div>
+                            <div class="kpi-description">Items requiring replenishment</div>
+                            <div class="kpi-side-stat"><strong>{{ inventory_summary['low_stock_items']
+                                    }}</strong><span>RECORDS</span></div>
+                        </div>
+                        <div class="kpi-list">
+
+                            {% for item in inventory_summary['details'] if item['quantity']|int <=
+                                item['minimum_quantity']|int %} <div class="kpi-row">
+                                <div class="kpi-row-info">
+                                    <div class="kpi-row-id">Min {{ item['minimum_quantity'] }}</div>
+                                    <div class="kpi-row-name">{{ item['item_name'] }}</div>
+                                </div>
+                                <div class="kpi-row-value">{{ item['quantity'] }}</div>
+                        </div>
+
+                        {% else %}
+
+                        <div class="empty-state">No low-stock items.</div>
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+                <div class="kpi-card accent-darkgreen">
+                    <div class="kpi-card-header">
+                        <div class="kpi-icon"><img src="{{ url_for('static', filename='images/dashboard/inventory_value.png') }}" alt="Inventory Value"></div>
+                            <div class="kpi-label">Inventory Value</div>
+                        <div class="kpi-value">{{ inventory_summary['inventory_value_display'] }}</div>
+                        <div class="kpi-description">Current inventory value</div>
+                        <div class="kpi-side-stat"><strong>{{ inventory_summary['details'] | length
+                                }}</strong><span>RECORDS</span></div>
+                    </div>
+                    <div class="kpi-list">
+
+                        {% for item in inventory_summary['details'] %}
+
+                        <div class="kpi-row">
+                            <div class="kpi-row-info">
+                                <div class="kpi-row-id">{{ item['quantity'] }} × ₹{{
+                                    '%.2f'|format(item['unit_cost']|float) }}</div>
+                                <div class="kpi-row-name">{{ item['item_name'] }}</div>
+                            </div>
+                            <div class="kpi-row-value">₹{{ '%.0f'|format(item['item_value']|float) }}</div>
+                        </div>
+
+                        {% else %}
+
+                        <div class="empty-state">No inventory value recorded.</div>
+
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="footer">
+            MLERMS Unit Dashboard — {{ selected_unit['unit_name'] }}
+        </div>
+    
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+        /* ==========================================
+           COLLAPSIBLE KPI CARDS
+           ========================================== */
+
+        (function initKpiCardToggles() {
+
+            document.querySelectorAll(".kpi-card").forEach(function (card, index) {
+
+                const header = card.querySelector(".kpi-card-header");
+                const details = card.querySelector(".kpi-list");
+
+                if (!header || !details) return;
+
+                const toggle = document.createElement("button");
+                toggle.type = "button";
+                toggle.className = "kpi-toggle";
+                toggle.setAttribute("aria-expanded", "false");
+                toggle.setAttribute("aria-label", "Show details");
+                toggle.textContent = "▼";
+
+                const detailsId = "kpi-details-" + index;
+                details.id = detailsId;
+                toggle.setAttribute("aria-controls", detailsId);
+
+                header.appendChild(toggle);
+
+                toggle.addEventListener("click", function () {
+
+                    const expanded = !card.classList.contains("expanded");
+
+                    document.querySelectorAll(".kpi-card.expanded").forEach(function (otherCard) {
+                        if (otherCard !== card) {
+                            otherCard.classList.remove("expanded");
+                            const otherToggle = otherCard.querySelector(".kpi-toggle");
+                            if (otherToggle) {
+                                otherToggle.textContent = "▼";
+                                otherToggle.setAttribute("aria-expanded", "false");
+                                otherToggle.setAttribute("aria-label", "Show details");
+                            }
+                        }
+                    });
+
+                    card.classList.toggle("expanded", expanded);
+
+                    toggle.textContent = expanded ? "▲" : "▼";
+                    toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+                    toggle.setAttribute(
+                        "aria-label",
+                        expanded ? "Hide details" : "Show details"
+                    );
+
+                });
+
+            });
+
+        })();
+
+
+        /* ==========================================
+           DATA FROM FLASK
+           ========================================== */
+
+        const statusData =
+            {{ status_summary | tojson }};
+
+        const conditionData =
+            {{ condition_summary | tojson }};
+
+        const maintenanceData =
+            {{ maintenance_status_summary | tojson }};
+
+        const readinessData =
+            {{ readiness_categories | tojson }};
+
+
+        /* ==========================================
+           COLOR HELPERS
+           ========================================== */
+
+        const FALLBACK_PALETTE = [
+            "#435d70", "#4caeb7", "#9bc92e",
+            "#e9a62d", "#a94a57", "#23966a",
+            "#688494", "#7e8990"
+        ];
+
+        function statusColor(label, idx) {
+            const key = (label || "").toLowerCase();
+
+            if (key.includes("non")) return "#e07a25";
+            if (key.includes("operational")) return "#238b5b";
+            if (key.includes("maintenance")) return "#0f5132";
+            if (key.includes("overdue")) return "#e07a25";
+            if (key.includes("decommission")) return "#94a3a8";
+
+            return FALLBACK_PALETTE[idx % FALLBACK_PALETTE.length];
+        }
+
+        function conditionClass(label) {
+            const key = (label || "").toLowerCase();
+
+            if (key === "excellent") return "bar-excellent";
+            if (key === "good") return "bar-good";
+            if (key === "fair") return "bar-fair";
+            if (key === "poor") return "bar-poor";
+
+            return "bar-default";
+        }
+
+        function maintenanceClass(label) {
+            const key = (label || "").toLowerCase();
+
+            if (key.includes("schedul")) return "bar-scheduled";
+            if (key.includes("progress")) return "bar-in-progress";
+            if (key.includes("pending")) return "bar-pending";
+            if (key.includes("complet")) return "bar-completed";
+            if (key.includes("overdue")) return "bar-overdue";
+
+            return "bar-default";
+        }
+
+        function readinessClass(label) {
+            const key = (label || "").toLowerCase();
+
+            if (key.includes("avail")) return "bar-readiness-availability";
+            if (key.includes("service")) return "bar-readiness-serviceability";
+            if (key.includes("maintenance")) return "bar-readiness-maintenance";
+            if (key.includes("overall")) return "bar-readiness-overall";
+
+            return "bar-readiness";
+        }
+
+
+        /* ==========================================
+           ASSET STATUS — GAUGE
+           ========================================== */
+
+        (function renderStatusGauge() {
+
+            const svg = document.getElementById("statusGauge");
+            const legend = document.getElementById("statusLegend");
+            const tooltip = document.getElementById("statusGaugeTooltip");
+            const centerValue = document.getElementById("statusGaugeCenterValue");
+
+            if (!svg) return;
+
+            svg.querySelectorAll(".gauge-segment, .gauge-maintenance-overlay").forEach(function (node) {
+                node.remove();
+            });
+            legend.innerHTML = "";
+
+            function findStatusValue(name) {
+                const item = statusData.find(function (row) {
+                    return String(row.status || "").toLowerCase() === name.toLowerCase();
+                });
+                return item ? Number(item.asset_count || 0) : 0;
+            }
+
+            const operational = findStatusValue("Operational");
+            const nonOperational = findStatusValue("Non-Operational");
+            const decommissioned = findStatusValue("Decommissioned");
+            const underMaintenance = Math.max(
+                0,
+                Number({{ summary['under_maintenance_assets'] | tojson }} || 0)
+            );
+
+        /* Under Maintenance is a subset of Non-Operational.
+           Keep the real total and visually overlay the maintenance
+           portion inside the orange Non-Operational arc. */
+        const total = operational + nonOperational + decommissioned;
+        centerValue.textContent = total.toLocaleString();
+
+        if (!total) {
+            legend.innerHTML =
+                '<div class="empty-state">No asset status data available.</div>';
+            return;
+        }
+
+        const pathD = "M 55 205 A 145 145 0 0 1 345 205";
+        const baseSegments = [
+            { name: "Operational", value: operational, color: "#238b5b" },
+            { name: "Non-Operational", value: nonOperational, color: "#e07a25" },
+            { name: "Decommissioned", value: decommissioned, color: "#94a3a8" }
+        ];
+
+        let offset = 0;
+        const segments = [];
+
+        baseSegments.forEach(function (item) {
+            const percentage = (item.value / total) * 100;
+            const path = document.createElementNS(
+                "http://www.w3.org/2000/svg", "path"
+            );
+
+            path.setAttribute("class", "gauge-segment");
+            path.setAttribute("stroke", item.color);
+            path.setAttribute("pathLength", "100");
+            path.setAttribute("d", pathD);
+            path.style.strokeDasharray = percentage + " 100";
+            path.style.strokeDashoffset = String(-offset);
+            svg.insertBefore(path, centerValue);
+
+            segments.push({
+                element: path,
+                name: item.name,
+                value: item.value,
+                percentage: percentage
+            });
+
+            offset += percentage;
+        });
+
+        const nonOperationalStart = (operational / total) * 100;
+        const maintenancePercentage = Math.min(
+            (underMaintenance / total) * 100,
+            (nonOperational / total) * 100
+        );
+
+        let maintenanceSegment = null;
+
+        if (maintenancePercentage > 0) {
+            const maintenancePath = document.createElementNS(
+                "http://www.w3.org/2000/svg", "path"
+            );
+
+            maintenancePath.setAttribute("class", "gauge-maintenance-overlay");
+            maintenancePath.setAttribute("stroke", "#0f5132");
+            maintenancePath.setAttribute("pathLength", "100");
+            maintenancePath.setAttribute("d", pathD);
+            maintenancePath.style.strokeDasharray = maintenancePercentage + " 100";
+            maintenancePath.style.strokeDashoffset = String(-nonOperationalStart);
+            svg.insertBefore(maintenancePath, centerValue);
+
+            maintenanceSegment = {
+                element: maintenancePath,
+                name: "Under Maintenance",
+                value: underMaintenance,
+                percentage: (underMaintenance / total) * 100
+            };
+        }
+
+        /* Treat Under Maintenance as a real interactive gauge segment.
+           It is visually overlaid on the Non-Operational arc because
+           maintenance is a subset of Non-Operational. */
+        const interactiveSegments = maintenanceSegment
+            ? segments.concat([maintenanceSegment])
+            : segments;
+
+        interactiveSegments.forEach(function (segment) {
+            segment.element.addEventListener("mouseenter", function () {
+                interactiveSegments.forEach(function (other) {
+                    if (other !== segment) {
+                        other.element.style.opacity = "0.28";
+                    }
+                });
+
+                tooltip.innerHTML =
+                    "<strong>" + segment.name + "</strong><br>" +
+                    segment.value.toLocaleString() + " assets<br>" +
+                    segment.percentage.toFixed(1) + "% of total assets";
+                tooltip.classList.add("show");
+            });
+
+            segment.element.addEventListener("mouseleave", function () {
+                interactiveSegments.forEach(function (other) {
+                    other.element.style.opacity = "1";
+                });
+                tooltip.classList.remove("show");
+            });
+        });
+
+        const legendItems = [
+            { name: "Operational", value: operational, color: "#238b5b" },
+            { name: "Decommissioned", value: decommissioned, color: "#94a3a8" },
+            { name: "Non-Operational", value: nonOperational, color: "#e07a25" },
+            { name: "Under Maintenance", value: underMaintenance, color: "#0f5132" }
+        ];
+
+        legendItems.forEach(function (item) {
+            const legendItem = document.createElement("div");
+            legendItem.className = "legend-item";
+            legendItem.innerHTML =
+                '<span class="legend-dot" style="background:' + item.color + ';">' +
+                '</span><span>' + item.name + '</span>' +
+                '<span class="legend-value">' + item.value.toLocaleString() + '</span>';
+            legend.appendChild(legendItem);
+        });
+
+        }) ();
+
+
+        /* ==========================================
+           EQUIPMENT CONDITION — BARS
+           ========================================== */
+
+        (function renderConditionBars() {
+
+            const container = document.getElementById("conditionBars");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            const order = ["Excellent", "Good", "Fair", "Poor"];
+
+            const dataMap = {};
+            conditionData.forEach(function (item) {
+                dataMap[String(item.condition || "").trim().toLowerCase()] =
+                    Number(item.asset_count || 0);
+            });
+
+            const rows = order.map(function (label) {
+                return {
+                    condition: label,
+                    asset_count: dataMap[label.toLowerCase()] || 0
+                };
+            });
+
+            const total = rows.reduce(function (sum, item) {
+                return sum + item.asset_count;
+            }, 0);
+
+            const max = Math.max.apply(null, rows.map(function (item) {
+                return item.asset_count;
+            }).concat([1]));
+
+            rows.forEach(function (item) {
+
+                const value = item.asset_count;
+                const percentage = total > 0 ? (value / total) * 100 : 0;
+                const width = value > 0 ? Math.max((value / max) * 100, 2) : 0;
+                const barClass = conditionClass(item.condition);
+
+                const row = document.createElement("div");
+                row.className = "condition-row";
+                row.setAttribute(
+                    "title",
+                    item.condition + ": " + value + " assets (" +
+                    percentage.toFixed(1) + "%)"
+                );
+
+                row.innerHTML =
+                    '<div class="bar-label">' + item.condition + '</div>' +
+                    '<div class="bar-track">' +
+                    '<div class="bar-fill ' + barClass +
+                    '" style="width:' + width + '%;"></div>' +
+                    '</div>' +
+                    '<div class="condition-value">' +
+                    '<strong>' + value.toLocaleString() + '</strong>' +
+                    '<span>' + percentage.toFixed(1) + '%</span>' +
+                    '</div>';
+
+                container.appendChild(row);
+
+            });
+
+        })();
+
+
+        /* ==========================================
+           MAINTENANCE STATUS — BARS
+           ========================================== */
+
+        (function renderMaintenanceBars() {
+
+            const container = document.getElementById("maintenanceBars");
+            if (!container) return;
+
+            container.innerHTML = "";
+
+            if (!maintenanceData.length) {
+                container.innerHTML =
+                    '<div class="empty-state">No maintenance data available.</div>';
+                return;
+            }
+
+            const max = Math.max.apply(null, maintenanceData.map(function (item) {
+                return Number(item.maintenance_count || 0);
+            }).concat([1]));
+
+            maintenanceData.forEach(function (item) {
+
+                const value = Number(item.maintenance_count || 0);
+                const percentage = value > 0 ? (value / max) * 100 : 0;
+                const barClass = maintenanceClass(item.display_status);
+
+                const row = document.createElement("div");
+                row.className = "bar-row";
+                row.title = item.display_status + ": " + value + " maintenance records";
+
+                row.innerHTML =
+                    '<div class="bar-label">' + item.display_status + '</div>' +
+                    '<div class="bar-track">' +
+                    '<div class="bar-fill ' + barClass +
+                    '" style="width:' + percentage + '%;"></div>' +
+                    '</div>' +
+                    '<div class="bar-value">' + value.toLocaleString() + '</div>';
+
+                container.appendChild(row);
+
+            });
+
+        })();
+
+
+        /* ==========================================
+           READINESS BY CATEGORY — 3D COLUMNS
+           ========================================== */
+
+        (function renderReadinessBars() {
+
+            const container = document.getElementById("readinessBars");
+            if (!container) return;
+
+            container.innerHTML = "";
+            container.classList.add("readiness-3d-chart");
+
+            if (!readinessData.length) {
+                container.innerHTML =
+                    '<div class="empty-state">No readiness category data available.</div>';
+                return;
+            }
+
+            const palette = [
+                { front: "#238b5b", light: "#42ad7b", side: "#14563f" },
+                { front: "#2878a8", light: "#52a0ca", side: "#1b5275" },
+                { front: "#d27a20", light: "#e9a04b", side: "#965315" },
+                { front: "#7c5aa6", light: "#9c7cc1", side: "#553b78" },
+                { front: "#2f7f8f", light: "#58a8b5", side: "#1d5965" },
+                { front: "#a94a57", light: "#c06b76", side: "#78323d" },
+                { front: "#435d70", light: "#688494", side: "#2c414f" },
+                { front: "#697586", light: "#8b98a8", side: "#46515f" }
+            ];
+
+            const plot = document.createElement("div");
+            plot.className = "readiness-3d-plot";
+            plot.style.setProperty("--column-count", readinessData.length);
+            plot.setAttribute("role", "img");
+            plot.setAttribute("aria-label", "Three-dimensional column chart showing readiness percentage by category");
+
+            readinessData.forEach(function (item, index) {
+                const value = Math.max(0, Math.min(100, Number(item.readiness_score || 0)));
+                const color = palette[index % palette.length];
+                const column = document.createElement("div");
+                column.className = "readiness-3d-column";
+                column.title = item.category_name + ": " + value.toFixed(1) + "% readiness";
+
+                const valueLabel = document.createElement("div");
+                valueLabel.className = "readiness-3d-value";
+                valueLabel.textContent = value.toFixed(1) + "%";
+
+                const barArea = document.createElement("div");
+                barArea.className = "readiness-3d-bar-area";
+
+                const bar = document.createElement("div");
+                bar.className = "readiness-3d-bar";
+                bar.style.setProperty("--bar-height", value + "%");
+                bar.style.setProperty("--bar-color", color.front);
+                bar.style.setProperty("--bar-light", color.light);
+                bar.style.setProperty("--bar-side", color.side);
+                bar.setAttribute("aria-hidden", "true");
+
+                const label = document.createElement("div");
+                label.className = "readiness-3d-label";
+                label.textContent = item.category_name;
+
+                barArea.appendChild(bar);
+                column.appendChild(valueLabel);
+                column.appendChild(barArea);
+                column.appendChild(label);
+                plot.appendChild(column);
+            });
+
+            container.appendChild(plot);
+
+        })();
+
+
+        /* ==========================================
+           OVERVIEW CHART TABS
+           ========================================== */
+
+        (function initOverviewChartTabs() {
+
+            document.querySelectorAll('.overview-chart-panel').forEach(function (panel) {
+
+                const tabs = panel.querySelectorAll('.chart-tab');
+                const views = panel.querySelectorAll('.chart-view');
+
+                tabs.forEach(function (tab) {
+
+                    tab.addEventListener('click', function () {
+
+                        const target = tab.getAttribute('data-chart-view');
+
+                        tabs.forEach(function (item) {
+                            item.classList.toggle('active', item === tab);
+                        });
+
+                        views.forEach(function (view) {
+                            view.classList.toggle(
+                                'hidden',
+                                view.getAttribute('data-chart-view') !== target
+                            );
+                        });
+
+                    });
+
+                });
+
+            });
+
+        })();
+
+
+        /* ==========================================
+           INVENTORY OVERVIEW — BARS
+           ========================================== */
+
+        (function renderInventoryBars() {
+
+            const container = document.getElementById('inventoryBars');
+            if (!container) return;
+
+            const inventoryItems =
+                {{ inventory_summary['details'] | tojson
+        }};
+
+        container.innerHTML = "";
+
+        if (!inventoryItems.length) {
+            container.innerHTML =
+                '<div class="empty-state">No inventory data available.</div>';
+            return;
+        }
+
+        const max = Math.max.apply(null, inventoryItems.map(function (item) {
+            return Number(item.quantity || 0);
+        }).concat([1]));
+
+        const categoryColors = {};
+        let categoryIndex = 0;
+
+        inventoryItems.forEach(function (item) {
+
+            const category = String(item.category || "Other");
+
+            if (categoryColors[category] === undefined) {
+                categoryColors[category] =
+                    (categoryIndex % 8) + 1;
+                categoryIndex++;
+            }
+
+            const value = Number(item.quantity || 0);
+            const percentage = value > 0 ? (value / max) * 100 : 0;
+            const colorClass =
+                "bar-inventory-" + categoryColors[category];
+
+            const row = document.createElement('div');
+            row.className = 'bar-row inventory-bar-row';
+            row.title =
+                item.item_name + ": " + value.toLocaleString() +
+                " " + (item.unit || "units");
+
+            row.innerHTML =
+                '<div class="bar-label inventory-bar-label">' +
+                String(item.item_name) +
+                '</div>' +
+                '<div class="bar-track inventory-bar-track">' +
+                '<div class="bar-fill inventory-bar-fill ' + colorClass +
+                '" style="width:' + percentage + '%;"></div>' +
+                '</div>' +
+                '<div class="bar-value inventory-bar-value">' +
+                value.toLocaleString() +
+                '</div>';
+
+            container.appendChild(row);
+
+        });
+
+        }) ();
+
+
+    
+</script>
+{% endblock %}

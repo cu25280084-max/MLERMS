@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Sign-In - MLERMS</title>
+    <style>
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; }
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-image: linear-gradient(90deg, rgba(5, 12, 15, 0.78), rgba(5, 12, 15, 0.35), rgba(5, 12, 15, 0.72)),
+        url("{{ url_for('static', filename='images/login-bg.png') }}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 0;
+    color: #fff;
+}
+.background-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,.10), rgba(0,0,0,.28));
+    pointer-events: none;
+}
+.login-wrapper { position: relative; width: 100%; max-width: 520px; padding: 20px; z-index: 2; }
+.login-card {
+    width: 100%;
+    padding: 38px 42px 32px;
+    background: linear-gradient(145deg, rgba(13,25,27,.65), rgba(7,17,19,.65));
+    border: 1px solid rgba(255,255,255,.28);
+    border-radius: 18px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 25px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.10);
+}
+.logo-container { text-align: center; margin-bottom: 18px; }
+.logo {
+    width: 115px; height: 115px; object-fit: contain; display: block;
+    margin: 0 auto 12px; filter: drop-shadow(0 5px 12px rgba(0,0,0,.45));
+}
+.system-name {
+    color: #fff; font-family: Georgia, "Times New Roman", serif;
+    font-size: 28px; font-weight: 700; letter-spacing: 3px;
+    margin: 0; text-align: center;
+}
+.system-description {
+    color: rgba(255,255,255,.70); font-size: 11px; font-weight: 500;
+    letter-spacing: 2px; line-height: 1.6; text-align: center;
+    margin-top: 6px; text-transform: uppercase;
+}
+.accent-line {
+    width: 100%; height: 2px; margin: 24px 0 26px;
+    background: linear-gradient(90deg, #e46b2d 0%, #e46b2d 35%, #fff 35%, #fff 65%, #557b50 65%, #557b50 100%);
+    opacity: .9;
+}
+.page-heading { color: #fff; font-size: 19px; font-weight: 700; letter-spacing: .3px; margin: 0 0 9px; text-align: center; }
+.page-description { color: rgba(255,255,255,.72); font-size: 13px; line-height: 1.65; text-align: center; margin: 0 0 22px; }
+.form-group { margin-bottom: 18px; }
+.form-label {
+    display: block; color: rgba(255,255,255,.78); font-size: 13px;
+    font-weight: 600; margin-bottom: 8px; letter-spacing: .4px;
+}
+.form-input {
+    width: 100%; height: 52px; padding: 0 16px; border-radius: 9px;
+    border: 1px solid rgba(255,255,255,.24); background: rgba(5,14,16,.42);
+    color: #fff; font-size: 19px; letter-spacing: 7px; text-align: center;
+    outline: none; transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+}
+.form-input::placeholder { color: rgba(255,255,255,.42); letter-spacing: 1px; font-size: 13px; }
+.form-input:focus {
+    border-color: rgba(112,164,105,.90); background: rgba(5,14,16,.60);
+    box-shadow: 0 0 0 3px rgba(112,164,105,.14);
+}
+.form-input:-webkit-autofill, .form-input:-webkit-autofill:hover, .form-input:-webkit-autofill:focus, .form-input:-webkit-autofill:active {
+    -webkit-text-fill-color: #fff !important;
+    -webkit-box-shadow: 0 0 0 1000px rgba(5,14,16,.72) inset !important;
+    box-shadow: 0 0 0 1000px rgba(5,14,16,.72) inset !important;
+    caret-color: #fff; transition: background-color 9999s ease-in-out 0s;
+}
+.error-message {
+    background: rgba(180,35,35,.20); border: 1px solid rgba(255,100,100,.40);
+    color: #ffb5b5; border-radius: 8px; padding: 11px 13px;
+    font-size: 13px; margin-bottom: 18px; text-align: center;
+}
+.login-button {
+    width: 100%; min-height: 53px; padding: 12px 16px; border: none; border-radius: 9px;
+    background: linear-gradient(135deg, #4d7049, #355633); color: #fff;
+    font-size: 15px; font-weight: 700; letter-spacing: .7px; cursor: pointer;
+    transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.login-button:hover {
+    background: linear-gradient(135deg, #5b8255, #3e653b); transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(0,0,0,.30);
+}
+.login-button:active { transform: translateY(0); }
+.secondary-link {
+    display: block; text-align: center; margin-top: 18px; color: rgba(255,255,255,.76);
+    font-size: 12px; text-decoration: none; transition: color .2s ease;
+}
+.secondary-link:hover { color: #fff; text-decoration: underline; }
+.footer-line { display: flex; align-items: center; gap: 12px; margin-top: 27px; }
+.footer-line::before, .footer-line::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.28); }
+.footer-text { color: rgba(255,255,255,.52); font-size: 10px; letter-spacing: 2.4px; white-space: nowrap; }
+.copyright { color: rgba(255,255,255,.35); text-align: center; font-size: 10px; line-height: 1.5; margin-top: 17px; }
+.qr-frame {
+    display: flex; align-items: center; justify-content: center; width: 194px; height: 194px;
+    padding: 10px; margin: 0 auto 18px; border-radius: 12px; background: #fff;
+    box-shadow: 0 10px 28px rgba(0,0,0,.28);
+}
+.qr-image { display: block; width: 100%; height: 100%; object-fit: contain; }
+.setup-instructions { color: rgba(255,255,255,.76); font-size: 13px; line-height: 1.65; margin: 0 0 16px; }
+.secret-label { color: rgba(255,255,255,.78); font-size: 12px; font-weight: 600; letter-spacing: .5px; margin: 0 0 7px; }
+.secret-box {
+    padding: 12px 14px; border-radius: 9px; border: 1px solid rgba(255,255,255,.22);
+    background: rgba(5,14,16,.42); color: #fff; font-family: Consolas, "Courier New", monospace;
+    font-size: 13px; letter-spacing: 1px; overflow-wrap: anywhere; line-height: 1.6; margin-bottom: 18px;
+}
+.security-note {
+    margin: 16px 0 0; padding: 11px 12px; border-radius: 8px;
+    border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.045);
+    color: rgba(255,255,255,.58); font-size: 11px; line-height: 1.6;
+}
+@media (max-width: 600px) {
+    body { overflow-y: auto; padding: 15px 0; }
+    .login-wrapper { max-width: 440px; padding: 15px; }
+    .login-card { padding: 30px 25px 26px; }
+    .logo { width: 90px; height: 90px; }
+    .system-name { font-size: 23px; letter-spacing: 2px; }
+    .system-description { font-size: 9px; letter-spacing: 1.5px; }
+    .accent-line { margin: 20px 0 22px; }
+    .footer-text { font-size: 8px; letter-spacing: 1.5px; }
+    .qr-frame { width: 176px; height: 176px; }
+}
+</style>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <main class="login-wrapper">
+        <section class="login-card">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/mlerms-logo.png') }}" alt="MLERMS Logo" class="logo">
+                <h1 class="system-name">MLERMS</h1>
+                <div class="system-description">Military Logistics &amp; Equipment<br>Readiness Management System</div>
+            </div>
+            <div class="accent-line"></div>
+
+            <h2 class="page-heading">TWO-FACTOR VERIFICATION</h2>
+            <p class="page-description">Enter the six-digit code from Google Authenticator to securely complete your sign-in.</p>
+
+            {% if error %}
+            <div class="error-message" role="alert">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="code" class="form-label">AUTHENTICATOR CODE</label>
+                    <input type="text" id="code" name="code" class="form-input"
+                           placeholder="000000" inputmode="numeric" autocomplete="one-time-code"
+                           pattern="[0-9 ]{6,7}" maxlength="7" aria-describedby="code-help" required autofocus>
+                </div>
+                <button type="submit" class="login-button">VERIFY AND SIGN IN <span style="margin-left:8px;">→</span></button>
+            </form>
+
+            <a class="secondary-link" href="{{ url_for('auth.login') }}">← Return to login</a>
+
+            <div class="footer-line"><span class="footer-text">LOGISTICS ENABLES COMBAT POWER</span></div>
+            <div class="copyright">Military Logistics &amp; Equipment Readiness Management System</div>
+        </section>
+    </main>
+    <script>
+        const codeInput = document.getElementById("code");
+        codeInput.addEventListener("input", function () {
+            this.value = this.value.replace(/[^0-9 ]/g, "").slice(0, 7);
+        });
+    </script>
+</body>
+</html>

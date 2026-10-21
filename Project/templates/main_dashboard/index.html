@@ -1,0 +1,4753 @@
+{% extends "base.html" %}
+
+{% block title %}MLERMS - Main Dashboard{% endblock %}
+
+{% block head_extra %}
+<style>
+        /* =========================================================
+           GLOBAL
+           ========================================================= */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #dddddd;
+
+            color: #1f2937;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================================
+           TOP BAR
+           ========================================================= */
+
+        .topbar {
+
+            height: 68px;
+
+            background: #172033;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 100;
+        }
+
+
+        .brand {
+
+            font-size: 23px;
+
+            font-weight: 800;
+
+            letter-spacing: .5px;
+        }
+
+
+        .brand small {
+
+            display: block;
+
+            font-size: 10px;
+
+            font-weight: 400;
+
+            color: #b8c1d1;
+
+            margin-top: 2px;
+        }
+
+
+        .user-area {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+            font-size: 14px;
+        }
+
+
+        .logout {
+
+            color: white;
+
+            border: 1px solid #68748a;
+
+            border-radius: 6px;
+
+            padding: 8px 14px;
+
+            transition: .15s ease;
+        }
+
+
+        .logout:hover {
+
+            background: #263149;
+
+            border-color: #8994a8;
+        }
+
+
+        /* =========================================================
+           PAGE
+           ========================================================= */
+
+        .page {
+
+            width: 100%;
+
+            max-width: 1750px;
+
+            margin: auto;
+
+            padding: 28px;
+        }
+
+
+        .page-title {
+
+            margin-bottom: 24px;
+        }
+
+
+        .page-title h1 {
+
+            margin: 0;
+
+            font-size: 29px;
+
+            font-weight: 800;
+
+            color: #182235;
+        }
+
+
+        .page-title p {
+
+            margin: 6px 0 0;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        /* =========================================================
+           SECTION TITLE
+           ========================================================= */
+
+        .section-title {
+
+            margin: 30px 0 13px;
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            color: #1f2937;
+        }
+
+
+        /* =========================================================
+           MAIN TWO-COLUMN LAYOUT
+           ========================================================= */
+
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: 2.5fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+
+        .dashboard-panel {
+
+            background: white;
+
+            border: 1px solid #e1e5eb;
+
+            border-radius: 20px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, .035);
+
+            overflow: hidden;
+
+            min-width: 0;
+        }
+
+
+        .panel-header {
+
+            padding: 18px 20px 4px;
+        }
+
+
+        .panel-title {
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+            color: #182235;
+        }
+
+
+        .panel-subtitle {
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: #7a8493;
+        }
+
+
+        .panel-body {
+
+            padding: 16px 20px 20px;
+        }
+
+
+        /* =========================================================
+   UNIT DASHBOARDS
+   ========================================================= */
+
+        .unit-panel {
+
+            min-height: 375px;
+
+        }
+
+
+        .unit-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 15px;
+
+        }
+
+
+        .unit-card {
+
+            position: relative;
+
+            min-height: 255px;
+
+            background: transparent;
+
+            border: none;
+
+            border-radius: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow: none;
+
+        }
+
+
+        .unit-card:hover {
+
+            transform: none;
+
+            border: none;
+
+            box-shadow: none;
+
+        }
+
+
+        .unit-logo {
+
+            width: 220px;
+
+            height: 220px;
+
+            object-fit: contain;
+
+            display: block;
+
+            transition:
+                transform .2s ease,
+                filter .2s ease;
+
+        }
+
+
+        .unit-card:hover .unit-logo {
+
+            transform: scale(1.08);
+
+            filter:
+                drop-shadow(0 8px 12px rgba(15, 23, 42, .18));
+
+        }
+
+
+        .unit-arrow {
+
+            position: absolute;
+
+            right: 10px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            width: 32px;
+
+            height: 32px;
+
+            border-radius: 50%;
+
+            background: #172033;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            transition:
+                background .15s ease,
+                transform .15s ease;
+
+        }
+
+
+        .unit-card:hover .unit-arrow {
+
+            background: #34445f;
+
+            transform:
+                translateY(-50%) translateX(2px);
+
+        }
+
+
+        /* =========================================================
+           ASSET STATUS GAUGE
+           ========================================================= */
+
+        .status-panel {
+
+            min-height: 375px;
+        }
+
+
+        .gauge-wrapper {
+
+            position: relative;
+
+            width: 100%;
+
+            height: 275px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+        }
+
+
+        .asset-gauge {
+
+            width: 100%;
+
+            max-width: 470px;
+
+            height: 275px;
+
+            overflow: visible;
+        }
+
+
+        .gauge-background {
+
+            fill: none;
+
+            stroke: #e4e7eb;
+
+            stroke-width: 42;
+
+            stroke-linecap: round;
+        }
+
+
+        .gauge-segment {
+
+            fill: none;
+
+            stroke-width: 42;
+
+            stroke-linecap: round;
+
+            cursor: pointer;
+
+            opacity: 1;
+
+            transition:
+                stroke-width .18s ease,
+                opacity .18s ease,
+                filter .18s ease;
+        }
+
+
+        .gauge-segment:hover {
+
+            stroke-width: 50;
+
+            filter:
+                drop-shadow(0 3px 5px rgba(15, 23, 42, .22));
+        }
+
+
+        .gauge-center-value {
+
+            font-size: 31px;
+
+            font-weight: 800;
+
+            fill: #182235;
+        }
+
+
+        .gauge-center-label {
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            letter-spacing: 1px;
+
+            fill: #7a8493;
+        }
+
+
+        .gauge-tooltip {
+
+            position: absolute;
+
+            left: 50%;
+
+            top: 12px;
+
+            transform: translateX(-50%);
+
+            background: #172033;
+
+            color: white;
+
+            border-radius: 7px;
+
+            padding: 8px 12px;
+
+            font-size: 12px;
+
+            line-height: 1.45;
+
+            pointer-events: none;
+
+            opacity: 0;
+
+            transition: opacity .15s ease;
+
+            white-space: nowrap;
+
+            z-index: 5;
+        }
+
+
+        .gauge-tooltip.show {
+
+            opacity: 1;
+        }
+
+
+        .status-legend {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+            margin-top: -4px;
+        }
+
+
+        .legend-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            font-size: 12px;
+
+            color: #4b5563;
+        }
+
+
+        .legend-dot {
+
+            width: 10px;
+
+            height: 10px;
+
+            border-radius: 50%;
+
+            flex: 0 0 auto;
+        }
+
+
+        .legend-value {
+
+            margin-left: auto;
+
+            font-weight: 800;
+
+            color: #1f2937;
+        }
+
+
+        /* =========================================================
+           ASSET STATUS TABLE
+           ========================================================= */
+
+        .asset-status-table-wrap {
+            margin-top: 14px;
+            max-height: 175px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            border: 1px solid #e5e9ee;
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .asset-status-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: fixed;
+        }
+
+        .asset-status-table th,
+        .asset-status-table td {
+            padding: 9px 10px;
+            border-bottom: 1px solid #edf0f3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .asset-status-table th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #f5f7f9;
+            color: #697586;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .asset-status-table td {
+            font-size: 13px;
+            color: #374151;
+            text-align: center;
+            transition: background-color .18s ease, color .18s ease;
+        }
+
+        .asset-status-table th:first-child,
+        .asset-status-table td:first-child {
+            width: 38%;
+            text-align: left;
+        }
+
+        .asset-status-table th:not(:first-child),
+        .asset-status-table td:not(:first-child) {
+            width: 15.5%;
+        }
+
+        .asset-status-table td strong {
+            color: #182235;
+            font-weight: 700;
+        }
+
+        .asset-status-table tbody tr:hover td {
+            background: #f5f8fc;
+            color: #182235;
+        }
+
+        .asset-status-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .asset-status-table-wrap::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .asset-status-table-wrap::-webkit-scrollbar-track {
+            background: #f1f3f5;
+        }
+
+        .asset-status-table-wrap::-webkit-scrollbar-thumb {
+            background: #b7bec7;
+            border-radius: 999px;
+        }
+
+
+        /* =========================================================
+           SYSTEM OVERVIEW
+           ========================================================= */
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .overview-card {
+            min-height: 100px;
+            padding: 1px 1px;
+
+            display: flex;
+            align-items: center;
+            gap: 18px;
+
+            background: #ffffff;
+            border: 1px solid #dce2e9;
+            border-radius: 18px;
+
+            box-sizing: border-box;
+        }
+
+        .overview-icon {
+            width: 75px;
+            height: 75px;
+
+            flex: 0 0 95px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .overview-icon img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .overview-content {
+            min-width: 0;
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .overview-label {
+            margin: 0 0 7px 0;
+
+            font-size: 15px;
+            line-height: 1.15;
+            font-weight: 700;
+
+            color: #607086;
+            text-transform: none;
+        }
+
+        .overview-value {
+            margin: 0;
+
+            font-size: 25px;
+            line-height: 1;
+            font-weight: 800;
+
+            color: #071a35;
+            white-space: nowrap;
+        }
+
+        .overview-description {
+            margin: 5px 0 0 0;
+
+            font-size: 11px;
+            line-height: 1.2;
+
+            color: #7a8798;
+        }
+
+        /* =========================================================
+           ASSET CONDITION PANEL
+           ========================================================= */
+
+        .condition-panel {
+            min-height: 355px;
+        }
+
+
+        .condition-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-top: 2px;
+        }
+
+
+        .condition-bars .condition-row {
+            display: grid;
+            grid-template-columns: 88px minmax(0, 1fr) 82px;
+            align-items: center;
+            gap: 1px;
+            padding: 7px 8px;
+            border-radius: 10px;
+            position: relative;
+            transition: background .18s ease, transform .18s ease;
+        }
+
+
+        .condition-bars .condition-row:hover {
+            background: #f6f8fb;
+            transform: translateX(2px);
+        }
+
+
+        .condition-bars .bar-label {
+            font-size: 13px;
+            font-weight: 800;
+            color: #344054;
+            white-space: nowrap;
+        }
+
+
+        .condition-bars .bar-track {
+            height: 35px;
+            width: 280px;
+        }
+
+
+        .condition-bars .bar-fill:hover {
+            filter: brightness(1.06) saturate(1.08);
+        }
+
+
+        .condition-value {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            line-height: 1.05;
+        }
+
+
+        .condition-value strong {
+            font-size: 15px;
+            font-weight: 800;
+            color: #182235;
+        }
+
+
+        .condition-value span {
+            margin-top: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #8a929f;
+        }
+
+
+        .condition-bars .condition-row[data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 7px);
+            transform: translate(-50%, 4px);
+            padding: 7px 10px;
+            background: #172033;
+            color: #ffffff;
+            border-radius: 7px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .15s ease, transform .15s ease;
+            z-index: 10;
+        }
+
+
+        .condition-bars .condition-row[data-tooltip]:hover::after {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+
+        /* =========================================================
+           REFERENCE-STYLE HORIZONTAL BARS
+           ========================================================= */
+
+        .horizontal-bars {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 18px;
+
+            padding-top: 15px;
+        }
+
+
+        .bar-row {
+
+            display: grid;
+
+            grid-template-columns:
+                60px minmax(0, 1fr) 55px;
+
+            align-items: center;
+
+            gap: 18px;
+        }
+
+
+        .bar-label {
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            color: #45505f;
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+        }
+
+
+        .bar-track {
+
+            position: relative;
+
+            height: 28px;
+
+            background: #d8dadd;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+
+        .bar-fill {
+
+            display: block;
+
+            height: 100%;
+
+            min-width: 0;
+
+            border-radius: 999px;
+
+            transition:
+                width .45s ease,
+                filter .15s ease;
+        }
+
+
+        .bar-value {
+
+            text-align: right;
+
+            font-size: 15px;
+
+            font-weight: 800;
+
+            color: #344054;
+
+            white-space: nowrap;
+        }
+
+
+        .bar-scale {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            margin-left: 100px;
+
+            margin-right: 55px;
+
+            margin-top: 14px;
+
+            font-size: 11px;
+
+            color: #9aa1ab;
+        }
+
+        /* =========================================================
+           BAR COLORS
+           ========================================================= */
+
+        .bar-excellent {
+
+            background:
+                linear-gradient(90deg,
+                    #9bc92e,
+                    #b5d84c);
+        }
+
+
+        .bar-good {
+
+            background:
+                linear-gradient(90deg,
+                    #4caeb7,
+                    #65c1c8);
+        }
+
+
+        .bar-fair {
+
+            background:
+                linear-gradient(90deg,
+                    #e9a62d,
+                    #f6bb58);
+        }
+
+
+        .bar-poor {
+
+            background:
+                linear-gradient(90deg,
+                    #a94a57,
+                    #be6a75);
+        }
+
+
+        .bar-default {
+
+            background:
+                linear-gradient(90deg,
+                    #435d70,
+                    #5b7889);
+        }
+
+
+        .bar-operational {
+
+            background:
+                linear-gradient(90deg,
+                    #23966a,
+                    #3aaf82);
+        }
+
+
+        .bar-maintenance {
+
+            background:
+                linear-gradient(90deg,
+                    #0f5132,
+                    #2c7656);
+        }
+
+
+        .bar-overdue {
+
+            background:
+                linear-gradient(90deg,
+                    #d86f20,
+                    #ec9349);
+        }
+
+
+        .bar-decommissioned {
+
+            background:
+                linear-gradient(90deg,
+                    #7e8990,
+                    #a0a9ae);
+        }
+
+
+        .bar-readiness {
+
+            background:
+                linear-gradient(90deg,
+                    #435d70,
+                    #688494);
+        }
+
+
+        /* =========================================================
+           UNIT COMPARISON
+           ========================================================= */
+
+        .panel {
+
+            background: white;
+
+            border: 1px solid #e1e5eb;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, .035);
+
+            padding: 20px;
+
+            min-width: 0;
+        }
+
+
+        .table-wrap {
+
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        th,
+        td {
+
+            text-align: left;
+
+            padding: 12px 10px;
+
+            border-bottom: 1px solid #edf0f3;
+
+            white-space: nowrap;
+        }
+
+
+        th {
+
+            background: #f7f8fa;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+
+            letter-spacing: .45px;
+        }
+
+
+        td {
+
+            font-size: 13px;
+
+            color: #374151;
+        }
+
+
+        td strong {
+
+            color: #182235;
+        }
+
+
+        .table-progress {
+
+            width: 115px;
+
+            height: 7px;
+
+            background: #e6e9ed;
+
+            border-radius: 999px;
+
+            display: inline-block;
+
+            overflow: hidden;
+
+            vertical-align: middle;
+
+            margin-right: 7px;
+        }
+
+
+        .table-progress span {
+
+            display: block;
+
+            height: 100%;
+
+            background: #435d70;
+
+            border-radius: 999px;
+        }
+
+
+        /* =========================================================
+           UNIT COMPARISON - INTERACTIVE TABLE
+           ========================================================= */
+
+        .unit-comparison-panel {
+
+            padding: 14px 18px 18px;
+
+            border-radius: 16px;
+
+            border: 1px solid #dfe5ec;
+
+            box-shadow: 0 3px 12px rgba(15, 23, 42, .045);
+
+            overflow: hidden;
+        }
+
+
+        .unit-comparison-panel .table-wrap {
+
+            overflow-x: auto;
+
+            border-radius: 11px;
+        }
+
+
+        .unit-comparison-panel table {
+
+            width: 100%;
+
+            border-collapse: separate;
+
+            border-spacing: 0;
+
+            min-width: 900px;
+        }
+
+
+        .unit-comparison-panel thead th {
+
+            background: #f1f4f8;
+
+            color: #344054;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            letter-spacing: .35px;
+
+            text-transform: uppercase;
+
+            padding: 14px 14px;
+
+            border-bottom: 1px solid #dfe5ec;
+
+            white-space: nowrap;
+        }
+
+
+        .unit-comparison-panel thead th:first-child {
+
+            border-top-left-radius: 10px;
+        }
+
+
+        .unit-comparison-panel thead th:last-child {
+
+            border-top-right-radius: 10px;
+        }
+
+
+        .unit-comparison-panel tbody td {
+
+            padding: 15px 14px;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            color: #344054;
+
+            background: #ffffff;
+
+            border-bottom: 1px solid #edf1f5;
+
+            transition:
+                background-color .18s ease,
+                color .18s ease;
+        }
+
+
+        .unit-comparison-panel tbody tr:last-child td {
+
+            border-bottom: none;
+        }
+
+
+        .unit-comparison-panel tbody tr {
+            cursor: pointer;
+            transition: transform .16s ease;
+        }
+
+
+        .unit-comparison-panel tbody tr:hover td {
+            background: #f5f8fc;
+            color: #182235;
+        }
+
+
+        .unit-comparison-panel tbody tr:hover {
+            transform: translateY(-1px);
+        }
+
+
+        .unit-comparison-panel tbody tr:focus-visible td {
+            background: #eef5fb;
+        }
+
+
+        .unit-cell {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            min-width: 225px;
+        }
+
+
+        .unit-comparison-logo {
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            object-fit: contain;
+            border-radius: 50%;
+            transition: transform .18s ease, filter .18s ease;
+        }
+
+
+        .unit-comparison-panel tbody tr:hover .unit-comparison-logo {
+            transform: scale(1.08);
+            filter: drop-shadow(0 2px 4px rgba(15, 23, 42, .16));
+        }
+
+
+        .unit-comparison-panel tbody td:first-child {
+
+            min-width: 210px;
+        }
+
+
+        .unit-comparison-panel tbody td strong {
+
+            display: inline-block;
+
+            margin-bottom: 3px;
+
+            color: #182235;
+
+            font-size: 14px;
+
+            font-weight: 800;
+        }
+
+
+        .unit-comparison-panel tbody td small {
+
+            color: #667085;
+
+            font-size: 12px;
+
+            font-weight: 500;
+        }
+
+
+        .unit-comparison-panel tbody tr:hover td small {
+
+            color: #475467;
+        }
+
+
+        .unit-comparison-panel .progress {
+
+            width: 105px;
+
+            height: 7px;
+
+            display: inline-block;
+
+            vertical-align: middle;
+
+            margin-right: 8px;
+
+            background: #e7ebf0;
+
+            border-radius: 999px;
+
+            overflow: hidden;
+        }
+
+
+        .unit-comparison-panel .progress span {
+
+            display: block;
+
+            height: 100%;
+
+            background: #435d70;
+
+            border-radius: 999px;
+
+            transition: width .35s ease;
+        }
+
+
+        .unit-comparison-panel tbody tr:hover .progress span {
+
+            background: #344b60;
+        }
+
+
+        @media (max-width: 900px) {
+
+            .unit-comparison-panel tbody td {
+
+                padding: 13px 11px;
+
+                font-size: 13px;
+            }
+
+            .unit-comparison-panel thead th {
+
+                padding: 12px 11px;
+
+                font-size: 11px;
+            }
+        }
+
+
+        /* =========================================================
+           READINESS
+           ========================================================= */
+
+        .readiness-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, .82fr) minmax(0, 1.18fr);
+
+            gap: 18px;
+
+            align-items: stretch;
+        }
+
+
+        .readiness-card {
+            min-width: 0;
+            background: #ffffff;
+            border: 1px solid #dfe5ec;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 3px 12px rgba(15, 23, 42, .045);
+        }
+
+
+        .readiness-card-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: #182235;
+            margin-bottom: 14px;
+        }
+
+
+        .readiness-summary {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            width: 100%;
+        }
+
+
+        .readiness-summary .mini-card {
+
+            min-width: 0;
+
+            min-height: 92px;
+
+            background: #f7f8fa;
+
+            border: 1px solid #e1e6ec;
+
+            border-radius: 12px;
+
+            padding: 16px 18px;
+
+            transition:
+                transform .18s ease,
+                box-shadow .18s ease,
+                border-color .18s ease;
+        }
+
+
+        .readiness-summary .mini-card:hover {
+
+            transform: translateY(-2px);
+
+            border-color: #cfd8e3;
+
+            box-shadow:
+                0 5px 14px rgba(15, 23, 42, .07);
+        }
+
+
+        .readiness-summary .mini-label {
+
+            font-size: 11px;
+
+            color: #657286;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .4px;
+
+            white-space: nowrap;
+        }
+
+
+        .readiness-summary .mini-value {
+
+            margin-top: 8px;
+
+            font-size: 25px;
+
+            line-height: 1;
+
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        /* =========================================================
+           READINESS-SPECIFIC HORIZONTAL BARS
+           ========================================================= */
+
+        .readiness-bars {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 17px;
+
+            padding-top: 5px;
+        }
+
+
+        .readiness-bars .bar-row {
+
+            display: grid;
+
+            grid-template-columns:
+                175px minmax(0, 1fr) 65px;
+
+            align-items: center;
+
+            gap: 12px;
+        }
+
+
+        .readiness-bars .bar-label {
+
+            min-width: 0;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #344054;
+
+            white-space: nowrap;
+
+            overflow: visible;
+
+            text-overflow: clip;
+        }
+
+
+        .readiness-bars .bar-track {
+
+            height: 30px;
+            
+        }
+
+
+        .readiness-bars .bar-value {
+
+            font-size: 14px;
+
+            color: #182235;
+        }
+
+
+        .bar-readiness-availability {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #238b5b,
+                    #3eaa78
+                );
+        }
+
+
+        .bar-readiness-serviceability {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #2878a8,
+                    #4c9bc7
+                );
+        }
+
+
+        .bar-readiness-maintenance {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #d27a20,
+                    #e9a04b
+                );
+        }
+
+
+        .bar-readiness-overall {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #435d70,
+                    #688494
+                );
+        }
+
+
+        /* =========================================================
+           MAINTENANCE OVERVIEW - SPECIFIC BAR LAYOUT
+           ========================================================= */
+
+        .maintenance-grid .maintenance-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+            padding-top: 20px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-row {
+            display: grid;
+            grid-template-columns: 175px minmax(0, 1fr) 55px;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-label {
+            min-width: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #344054;
+            white-space: nowrap;
+            overflow: visible;
+            text-overflow: clip;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-track {
+            height: 34px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-value {
+            font-size: 14px;
+            font-weight: 800;
+            color: #182235;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-fill {
+            transition: width .45s ease, filter .18s ease;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-fill:hover {
+            filter: brightness(1.06);
+        }
+
+        .maintenance-grid .maintenance-bars .bar-scheduled {
+            background: linear-gradient(90deg, #9aa1a8, #c0c5ca);
+        }
+
+        .maintenance-grid .maintenance-bars .bar-in-progress {
+            background: linear-gradient(90deg, #0f5132, #2c7656);
+        }
+
+        .maintenance-grid .maintenance-bars .bar-pending {
+            background: linear-gradient(90deg, #d28a20, #e5aa4f);
+        }
+
+        .maintenance-grid .maintenance-bars .bar-completed {
+            background: linear-gradient(90deg, #238b5b, #3eaa78);
+        }
+
+        .maintenance-grid .maintenance-bars .bar-overdue {
+            background: linear-gradient(90deg, #d86f20, #ec9349);
+        }
+
+
+        /* =========================================================
+           MAINTENANCE
+           ========================================================= */
+
+        .maintenance-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr) minmax(300px, .55fr);
+
+            gap: 18px;
+        }
+
+
+        .summary-table {
+
+            width: 100%;
+
+            border-collapse: collapse;
+        }
+
+
+        .summary-table td {
+
+            padding: 12px 8px;
+
+            border-bottom: 1px solid #edf0f3;
+        }
+
+
+        .summary-table td:last-child {
+
+            text-align: right;
+
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        /* =========================================================
+           INVENTORY
+           ========================================================= */
+
+        .inventory-kpi-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 13px;
+
+            margin-bottom: 18px;
+        }
+
+
+        .inventory-kpi {
+
+            background: white;
+
+            border: 1px solid #e1e5eb;
+
+            border-radius: 10px;
+
+            padding: 16px;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, .035);
+        }
+
+
+        .inventory-kpi-label {
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .4px;
+
+            color: #7a8493;
+        }
+
+
+        .inventory-kpi-value {
+
+            margin-top: 7px;
+
+            font-size: 25px;
+
+            font-weight: 800;
+
+            color: #172033;
+        }
+
+
+        .inventory-category-bars .bar-row {
+            grid-template-columns: 145px minmax(0, 1fr) 55px;
+            gap: 12px;
+            min-height: 18px;
+        }
+
+
+        .inventory-category-bars .bar-label {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            line-height: 1.25;
+            font-size: 12px;
+        }
+
+
+        .inventory-category-bars .bar-track {
+            height: 30px;
+        }
+
+
+        .inventory-category-bars .bar-fill:hover {
+            filter: brightness(1.07) saturate(1.08);
+        }
+
+
+        .bar-inventory-1 { background: linear-gradient(90deg, #4caeb7, #65c1c8); }
+        .bar-inventory-2 { background: linear-gradient(90deg, #9bc92e, #b5d84c); }
+        .bar-inventory-3 { background: linear-gradient(90deg, #e9a62d, #f6bb58); }
+        .bar-inventory-4 { background: linear-gradient(90deg, #a94a57, #be6a75); }
+        .bar-inventory-5 { background: linear-gradient(90deg, #435d70, #5b7889); }
+        .bar-inventory-6 { background: linear-gradient(90deg, #23966a, #3aaf82); }
+
+
+        .inventory-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                minmax(0, 1fr) minmax(0, 1fr);
+
+            gap: 18px;
+        }
+
+
+        /* =========================================================
+           EMPTY STATE
+           ========================================================= */
+
+        .empty-state {
+
+            text-align: center;
+
+            padding: 35px 15px;
+
+            color: #8a929f;
+
+            font-size: 13px;
+        }
+
+
+        /* =========================================================
+           FOOTER
+           ========================================================= */
+
+        .footer {
+
+            text-align: center;
+
+            color: #8a929f;
+
+            font-size: 11px;
+
+            padding: 30px 0 10px;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 1250px) {
+
+            .dashboard-row {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .unit-grid {
+
+                grid-template-columns:
+                    repeat(4, minmax(0, 1fr));
+            }
+
+
+            .overview-grid {
+
+                grid-template-columns:
+                    repeat(3, minmax(0, 1fr));
+            }
+
+        }
+
+
+        @media (max-width: 1000px) {
+
+            .unit-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .overview-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .inventory-kpi-grid {
+
+                grid-template-columns:
+                    repeat(2, minmax(0, 1fr));
+            }
+
+
+            .readiness-grid,
+            .inventory-grid,
+            .maintenance-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .inventory-category-bars .bar-row {
+
+                grid-template-columns: 125px minmax(0, 1fr) 50px;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .page {
+
+                padding: 16px;
+            }
+
+
+            .topbar {
+
+                padding: 0 15px;
+
+                height: auto;
+
+                min-height: 68px;
+
+                gap: 12px;
+            }
+
+
+            .user-area {
+
+                font-size: 11px;
+
+                gap: 7px;
+            }
+
+
+            .user-area>span {
+
+                display: none;
+            }
+
+
+            .page-title h1 {
+
+                font-size: 24px;
+            }
+
+
+            .unit-grid,
+            .overview-grid,
+            .inventory-kpi-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .unit-card {
+
+                min-height: 225px;
+            }
+
+
+            .bar-row {
+
+                grid-template-columns:
+                    100px minmax(0, 1fr) 45px;
+
+                gap: 8px;
+            }
+
+
+            .bar-scale {
+
+                margin-left: 108px;
+
+                margin-right: 45px;
+
+                margin-top: 8px;
+            }
+
+
+            .maintenance-grid .maintenance-bars .bar-row {
+                grid-template-columns: 145px minmax(0, 1fr) 50px;
+                gap: 8px;
+            }
+
+
+            .readiness-grid {
+
+                grid-template-columns: 1fr;
+
+                gap: 20px;
+            }
+
+
+            .readiness-summary {
+
+                max-width: none;
+            }
+
+
+            .readiness-bars .bar-row {
+
+                grid-template-columns:
+                    145px minmax(0, 1fr) 55px;
+
+                gap: 8px;
+            }
+
+
+            .readiness-bars + .bar-scale {
+
+                margin-left: 153px !important;
+
+                margin-right: 55px !important;
+            }
+
+
+            .status-legend {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+    
+        /* =========================================================
+           MLERMS MAIN DASHBOARD — GLOBAL UI POLISH
+           Visual-only changes. Dashboard data/routes are untouched.
+           ========================================================= */
+
+        :root {
+            --mlerms-navy: #172033;
+            --mlerms-navy-2: #223047;
+            --mlerms-green: #4f7b4f;
+            --mlerms-green-dark: #315c3a;
+            --mlerms-orange: #e87824;
+            --mlerms-surface: rgba(255, 255, 255, .96);
+            --mlerms-border: #dbe1e5;
+            --mlerms-text: #182235;
+            --mlerms-muted: #687487;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(
+                    180deg,
+                    rgba(12, 22, 35, .18) 0%,
+                    rgba(243, 245, 247, .88) 14%,
+                    rgba(243, 245, 247, .96) 100%
+                ),
+                url("{{ url_for('static', filename='images/dashboard/main_dashboard_bg.png') }}")
+                center top / cover fixed no-repeat;
+            color: var(--mlerms-text);
+        }
+
+        /* TOP HEADER */
+
+        .topbar {
+            height: 82px;
+            padding: 0 34px;
+            background: rgba(23, 32, 51, .98);
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            box-shadow: 0 4px 18px rgba(10, 18, 30, .18);
+        }
+
+        .topbar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(
+                90deg,
+                #f27a22 0 33.33%,
+                #dfe6e1 33.33% 66.66%,
+                #587b59 66.66% 100%
+            );
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .brand-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            flex: 0 0 48px;
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .22));
+        }
+
+        .brand-copy {
+            min-width: 0;
+        }
+
+        .brand-name {
+            font-size: 22px;
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: .7px;
+            color: #ffffff;
+        }
+
+        .brand small {
+            margin-top: 5px;
+            font-size: 9px;
+            line-height: 1.2;
+            letter-spacing: .15px;
+            color: #c4ccd7;
+            white-space: nowrap;
+        }
+
+        .user-area {
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .user-welcome {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 8px;
+            background: rgba(255,255,255,.045);
+            color: #eef2f6;
+        }
+
+        .welcome-label {
+            color: #aeb8c7;
+            font-size: 11px;
+        }
+
+        .user-welcome strong {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .logout {
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid #637087;
+            color: #ffffff;
+            background: rgba(255,255,255,.025);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .logout:hover {
+            background: var(--mlerms-green-dark);
+            border-color: #6f936f;
+            transform: translateY(-1px);
+        }
+
+        /* PAGE / TITLE */
+
+        .page {
+            width: min(100%, 1660px);
+            max-width: 1660px;
+            padding: 24px 24px 38px;
+        }
+
+        .page-title {
+            min-height: 88px;
+            margin-bottom: 18px;
+            padding: 18px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            background: rgba(255, 255, 255, .90);
+            border: 1px solid rgba(219, 225, 229, .95);
+            border-radius: 16px;
+            box-shadow: 0 5px 18px rgba(15, 23, 42, .07);
+            backdrop-filter: blur(7px);
+        }
+
+        .page-title-main {
+            min-width: 0;
+        }
+
+        .page-eyebrow {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--mlerms-green-dark);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.15px;
+            text-transform: uppercase;
+        }
+
+        .page-title h1 {
+            margin: 0;
+            color: var(--mlerms-navy);
+            font-size: 28px;
+            line-height: 1.1;
+            font-weight: 800;
+            letter-spacing: -.25px;
+        }
+
+        .page-title p {
+            margin: 6px 0 0;
+            color: #6c7787;
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .page-title-accent {
+            width: 128px;
+            height: 4px;
+            flex: 0 0 128px;
+            border-radius: 999px;
+            background: linear-gradient(
+                90deg,
+                var(--mlerms-orange) 0 33%,
+                #dce3e0 33% 66%,
+                var(--mlerms-green) 66% 100%
+            );
+        }
+
+        /* SECTION RHYTHM */
+
+        .section-title {
+            margin: 24px 2px 11px;
+            font-size: 18px;
+            line-height: 1.2;
+            color: var(--mlerms-navy);
+            letter-spacing: -.1px;
+        }
+
+        .dashboard-row {
+            grid-template-columns: minmax(0, 2.15fr) minmax(390px, .92fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* CARD SYSTEM */
+
+        .dashboard-panel,
+        .panel,
+        .unit-comparison-panel,
+        .readiness-card,
+        .inventory-kpi {
+            background: var(--mlerms-surface);
+            border-color: var(--mlerms-border);
+            box-shadow:
+                0 4px 16px rgba(15, 23, 42, .055),
+                0 1px 2px rgba(15, 23, 42, .035);
+        }
+
+        .dashboard-panel {
+            border-radius: 16px;
+        }
+
+        .panel-header {
+            padding: 17px 19px 5px;
+        }
+
+        .panel-title {
+            font-size: 17px;
+            line-height: 1.2;
+            color: var(--mlerms-navy);
+        }
+
+        .panel-subtitle {
+            margin-top: 5px;
+            font-size: 11px;
+            color: var(--mlerms-muted);
+        }
+
+        .panel-body {
+            padding: 14px 19px 19px;
+        }
+
+        /* UNIT DASHBOARDS */
+
+        .unit-panel,
+        .status-panel {
+            min-height: 352px;
+        }
+
+        .unit-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px 10px;
+        }
+
+        .unit-card {
+            min-height: 205px;
+            border-radius: 12px;
+        }
+
+        .unit-logo {
+            width: 220px;
+            height: 220px;
+        }
+
+        .unit-card:hover .unit-logo {
+            transform: scale(1.045);
+        }
+
+        .unit-arrow {
+            right: 3px;
+            width: 30px;
+            height: 30px;
+            background: var(--mlerms-navy);
+            font-size: 16px;
+        }
+
+        .unit-card:hover .unit-arrow {
+            background: var(--mlerms-green-dark);
+        }
+
+        /* ASSET STATUS */
+
+        .gauge-wrapper {
+            height: 238px;
+        }
+
+        .asset-gauge {
+            height: 238px;
+            max-width: 430px;
+        }
+
+        .gauge-center-value {
+            font-size: 29px;
+        }
+
+        .status-legend {
+            gap: 8px 12px;
+            margin-top: -2px;
+        }
+
+        .legend-item {
+            font-size: 11px;
+        }
+
+        /* SYSTEM OVERVIEW */
+
+        .overview-grid {
+            gap: 10px;
+        }
+
+        .overview-card {
+            min-height: 88px;
+            padding: 10px 12px;
+            gap: 11px;
+            border-radius: 14px;
+            background: #fbfcfc;
+            border-color: #dfe4e7;
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .overview-card:hover {
+            transform: translateY(-2px);
+            border-color: #cbd5d0;
+            box-shadow: 0 7px 16px rgba(15, 23, 42, .07);
+        }
+
+        .overview-icon {
+            width: 56px;
+            height: 56px;
+            flex: 0 0 56px;
+        }
+
+        .overview-icon img {
+            width: 52px;
+            height: 52px;
+        }
+
+        .overview-label {
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #657286;
+        }
+
+        .overview-value {
+            font-size: 23px;
+        }
+
+        .overview-description {
+            margin-top: 4px;
+            font-size: 9px;
+        }
+
+        /* CHARTS */
+
+        .condition-panel {
+            min-height: 334px;
+        }
+
+        .condition-bars {
+            gap: 8px;
+            padding-top: 2px;
+        }
+
+        .condition-bars .condition-row {
+            grid-template-columns: 82px minmax(0, 1fr) 68px;
+            gap: 9px;
+            padding: 6px 5px;
+        }
+
+        .condition-bars .bar-label {
+            font-size: 12px;
+        }
+
+        .condition-bars .bar-track {
+            width: 100%;
+            height: 27px;
+        }
+
+        .condition-value strong {
+            font-size: 14px;
+        }
+
+        .horizontal-bars {
+            gap: 15px;
+            padding-top: 12px;
+        }
+
+        .bar-row {
+            grid-template-columns: 90px minmax(0, 1fr) 55px;
+            gap: 12px;
+        }
+
+        .bar-label {
+            font-size: 11px;
+        }
+
+        .bar-track {
+            height: 26px;
+        }
+
+        .bar-value {
+            font-size: 13px;
+        }
+
+        /* UNIT COMPARISON */
+
+        .unit-comparison-panel {
+            padding: 12px 16px 16px;
+            border-radius: 15px;
+        }
+
+        .unit-comparison-panel thead th {
+            padding: 11px 12px;
+            font-size: 10px;
+        }
+
+        .unit-comparison-panel tbody td {
+            padding: 12px;
+            font-size: 12px;
+        }
+
+        .unit-comparison-panel tbody td strong {
+            font-size: 12px;
+        }
+
+        .unit-comparison-panel tbody td small {
+            font-size: 10px;
+        }
+
+        .unit-comparison-logo {
+            width: 36px;
+            height: 36px;
+            flex-basis: 36px;
+        }
+
+        .unit-cell {
+            gap: 9px;
+            min-width: 205px;
+        }
+
+        .unit-comparison-panel .progress {
+            width: 92px;
+            height: 6px;
+        }
+
+        /* READINESS / MAINTENANCE / INVENTORY */
+
+        .readiness-grid,
+        .maintenance-grid,
+        .inventory-grid {
+            gap: 16px;
+        }
+
+        .readiness-card {
+            padding: 16px;
+            border-radius: 15px;
+        }
+
+        .readiness-card-title {
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .readiness-summary {
+            gap: 9px;
+        }
+
+        .readiness-summary .mini-card {
+            min-height: 82px;
+            padding: 13px 14px;
+            border-radius: 11px;
+        }
+
+        .readiness-summary .mini-label {
+            font-size: 10px;
+        }
+
+        .readiness-summary .mini-value {
+            margin-top: 7px;
+            font-size: 22px;
+        }
+
+        .readiness-bars {
+            gap: 13px;
+            padding-top: 3px;
+        }
+
+        .readiness-bars .bar-row {
+            grid-template-columns: 155px minmax(0, 1fr) 58px;
+            gap: 10px;
+        }
+
+        .readiness-bars .bar-label {
+            font-size: 12px;
+        }
+
+        .readiness-bars .bar-track {
+            height: 27px;
+        }
+
+        .maintenance-grid .maintenance-bars {
+            gap: 13px;
+            padding-top: 15px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-row {
+            grid-template-columns: 155px minmax(0, 1fr) 48px;
+            gap: 10px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-label {
+            font-size: 12px;
+        }
+
+        .maintenance-grid .maintenance-bars .bar-track {
+            height: 28px;
+        }
+
+        .inventory-kpi-grid {
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .inventory-kpi {
+            padding: 13px 14px;
+            border-radius: 11px;
+        }
+
+        .inventory-kpi-label {
+            font-size: 9px;
+        }
+
+        .inventory-kpi-value {
+            margin-top: 6px;
+            font-size: 22px;
+        }
+
+        .inventory-category-bars .bar-row {
+            grid-template-columns: 150px minmax(0, 1fr) 48px;
+            gap: 10px;
+        }
+
+        .inventory-category-bars .bar-label {
+            font-size: 11px;
+        }
+
+        .inventory-category-bars .bar-track {
+            height: 26px;
+        }
+
+        .footer {
+            padding: 24px 0 6px;
+            font-size: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 1250px) {
+            .dashboard-row {
+                grid-template-columns: 1fr;
+            }
+
+            .unit-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 900px) {
+            .topbar {
+                padding: 0 20px;
+            }
+
+            .page {
+                padding: 18px;
+            }
+
+            .page-title {
+                min-height: 78px;
+            }
+
+            .page-title-accent {
+                display: none;
+            }
+
+            .unit-logo {
+                width: 160px;
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                min-height: 72px;
+                height: 72px;
+                padding: 0 14px;
+            }
+
+            .brand-logo {
+                width: 40px;
+                height: 40px;
+                flex-basis: 40px;
+            }
+
+            .brand-name {
+                font-size: 18px;
+            }
+
+            .brand small {
+                display: none;
+            }
+
+            .user-welcome {
+                padding: 7px 8px;
+            }
+
+            .welcome-label {
+                display: none;
+            }
+
+            .page {
+                padding: 14px;
+            }
+
+            .page-title {
+                padding: 15px 16px;
+                margin-bottom: 14px;
+            }
+
+            .page-title h1 {
+                font-size: 23px;
+            }
+
+            .unit-logo {
+                width: 150px;
+                height: 150px;
+            }
+        }
+
+    
+        /* =========================================================
+           TOP HEADER — SLIGHTLY LARGER
+           ========================================================= */
+        .topbar {
+            height: 94px;
+            padding: 0 36px;
+        }
+
+        .brand-logo {
+            width: 54px;
+            height: 54px;
+            flex-basis: 54px;
+        }
+
+        .brand-name {
+            font-size: 24px;
+        }
+
+        .brand small {
+            font-size: 9.5px;
+            margin-top: 5px;
+        }
+
+        .user-area {
+            gap: 14px;
+            font-size: 13px;
+        }
+
+        .user-welcome {
+            padding: 9px 14px;
+        }
+
+        .logout {
+            padding: 9px 16px;
+        }
+
+        @media (max-width: 700px) {
+            .topbar {
+                min-height: 78px;
+                height: auto;
+                padding: 0 15px;
+            }
+
+            .brand-logo {
+                width: 44px;
+                height: 44px;
+                flex-basis: 44px;
+            }
+
+            .brand-name {
+                font-size: 21px;
+            }
+        }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+<!-- =====================================================
+         PAGE TITLE
+         ===================================================== -->
+
+        <div class="page-title">
+
+            <div class="page-title-main">
+                <span class="page-eyebrow">MLERMS / OPERATIONS</span>
+                <h1>Main Dashboard</h1>
+                <p>Combined operational overview of all units</p>
+            </div>
+
+            <div class="page-title-accent" aria-hidden="true"></div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+         ROW 1
+         UNIT DASHBOARDS | ASSET STATUS
+         ===================================================== -->
+
+        <div class="dashboard-row">
+
+
+            <!-- =================================================
+             UNIT DASHBOARDS
+             ================================================= -->
+
+            <section class="dashboard-panel unit-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Unit Dashboards
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Select a unit to open its detailed dashboard
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+                    <div class="unit-grid">
+
+
+                        {% for unit in main_dashboard.units %}
+
+
+                        <a class="unit-card" href="{{ url_for(
+                            'dashboard.unit_dashboard',
+                            unit_id=unit.unit_id
+                        ) }}">
+
+
+                            {% if unit.unit_id == "UNIT-001" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_001.png'
+                                ) }}" alt="Unit 001">
+
+                            {% elif unit.unit_id == "UNIT-002" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_002.png'
+                                ) }}" alt="Unit 002">
+
+                            {% elif unit.unit_id == "UNIT-003" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_003.png'
+                                ) }}" alt="Unit 003">
+
+                            {% elif unit.unit_id == "UNIT-004" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_004.png'
+                                ) }}" alt="Unit 004">
+
+                            {% elif unit.unit_id == "UNIT-005" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_005.png'
+                                ) }}" alt="Unit 005">
+
+                            {% elif unit.unit_id == "UNIT-006" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_006.png'
+                                ) }}" alt="Unit 006">
+
+                            {% elif unit.unit_id == "UNIT-007" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_007.png'
+                                ) }}" alt="Unit 007">
+
+                            {% elif unit.unit_id == "UNIT-008" %}
+
+                            <img class="unit-logo" src="{{ url_for(
+                                    'static',
+                                    filename='images/units/unit_008.png'
+                                ) }}" alt="Unit 008">
+
+                            {% else %}
+
+                            <div>
+                                {{ unit.unit_id }}
+                            </div>
+
+                            {% endif %}
+
+
+                            <span class="unit-arrow">
+                                →
+                            </span>
+
+
+                        </a>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================================
+             ASSET STATUS
+             ================================================= -->
+
+            <section class="dashboard-panel status-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Asset Status
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Current distribution of all allocated assets
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+
+                    <div class="gauge-wrapper">
+
+                        <div id="assetGaugeTooltip" class="gauge-tooltip"></div>
+
+
+                        <svg class="asset-gauge" viewBox="0 0 400 255" aria-label="Asset status gauge">
+
+
+                            <!-- BACKGROUND -->
+
+                            <path class="gauge-background" d="M 55 205 A 145 145 0 0 1 345 205"></path>
+
+
+                            <!-- OPERATIONAL -->
+
+                            <path id="operationalPath" class="gauge-segment" stroke="#238b5b" pathLength="100"
+                                d="M 55 205 A 145 145 0 0 1 345 205"></path>
+
+
+                            <!-- UNDER MAINTENANCE -->
+
+                            <path id="maintenancePath" class="gauge-segment" stroke="#0f5132" pathLength="100"
+                                d="M 55 205 A 145 145 0 0 1 345 205"></path>
+
+
+                            <!-- OVERDUE -->
+
+                            <path id="overduePath" class="gauge-segment" stroke="#e07a25" pathLength="100"
+                                d="M 55 205 A 145 145 0 0 1 345 205"></path>
+
+
+                            <!-- DECOMMISSIONED -->
+
+                            <path id="decommissionedPath" class="gauge-segment" stroke="#94a3a8" pathLength="100"
+                                d="M 55 205 A 145 145 0 0 1 345 205"></path>
+
+
+                            <!-- CENTER VALUE -->
+
+                            <text id="gaugeCenterValue" class="gauge-center-value" x="200" y="164" text-anchor="middle">
+                                0%
+                            </text>
+
+
+                            <text class="gauge-center-label" x="200" y="188" text-anchor="middle">
+                                OPERATIONAL
+                            </text>
+
+
+                        </svg>
+
+                    </div>
+
+
+                    <div class="status-legend">
+
+
+                        <div class="legend-item">
+
+                            <span class="legend-dot" style="background:#238b5b;"></span>
+
+                            <span>
+                                Operational
+                            </span>
+
+                            <span class="legend-value" id="operationalLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-item">
+
+                            <span class="legend-dot" style="background:#0f5132;"></span>
+
+                            <span>
+                                Under Maintenance
+                            </span>
+
+                            <span class="legend-value" id="maintenanceLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-item">
+
+                            <span class="legend-dot" style="background:#e07a25;"></span>
+
+                            <span>
+                                Overdue
+                            </span>
+
+                            <span class="legend-value" id="overdueLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                        <div class="legend-item">
+
+                            <span class="legend-dot" style="background:#94a3a8;"></span>
+
+                            <span>
+                                Decommissioned
+                            </span>
+
+                            <span class="legend-value" id="decommissionedLegend">
+                                0
+                            </span>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ASSET STATUS TABLE -->
+
+                    {% if main_dashboard.asset_status_by_type %}
+
+                    <div class="asset-status-table-wrap">
+
+                        <table class="asset-status-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Operational</th>
+                                    <th>Under Maintenance</th>
+                                    <th>Overdue</th>
+                                    <th>Decommissioned</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                {% for asset in main_dashboard.asset_status_by_type %}
+
+                                <tr>
+
+                                    <td title="{{ asset.asset_name }}">
+                                        <strong>{{ asset.asset_name }}</strong>
+                                    </td>
+
+                                    <td>{{ asset.operational }}</td>
+
+                                    <td>{{ asset.under_maintenance }}</td>
+
+                                    <td>{{ asset.overdue }}</td>
+
+                                    <td>{{ asset.decommissioned }}</td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                    {% else %}
+
+                    <div class="empty-state">
+                        No asset status data available.
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+         ROW 2
+         SYSTEM OVERVIEW | ASSET CONDITION
+         ===================================================== -->
+
+        <div class="dashboard-row">
+
+
+            <!-- =================================================
+             SYSTEM OVERVIEW
+             ================================================= -->
+
+            <section class="dashboard-panel overview-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        System Overview
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Combined system-level asset indicators
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+
+                    <div class="overview-grid">
+
+
+                        <!-- TOTAL ASSETS -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/total_assets.png'
+                                ) }}" alt="Total Assets">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Total Assets
+                                </div>
+
+                                <div class="overview-value">
+                                    {{ main_dashboard.total_assets }}
+                                </div>
+
+                                <div class="overview-description">
+                                    Total allocated equipment
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- OPERATIONAL -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/operational.png'
+                                ) }}" alt="Operational Assets">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Operational Assets
+                                </div>
+
+                                <div class="overview-value">
+                                    {{ main_dashboard.operational_assets }}
+                                </div>
+
+                                <div class="overview-description">
+                                    Currently operational
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- NON OPERATIONAL -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/non_operational.png'
+                                ) }}" alt="Non-Operational Assets">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Non-Operational Assets
+                                </div>
+
+                                <div class="overview-value">
+                                    {{ main_dashboard.non_operational_assets }}
+                                </div>
+
+                                <div class="overview-description">
+                                    Under maintenance or overdue
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- DECOMMISSIONED -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/decommissioned.png'
+                                ) }}" alt="Decommissioned">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Decommissioned
+                                </div>
+
+                                <div class="overview-value">
+                                    {{ main_dashboard.decommissioned_assets }}
+                                </div>
+
+                                <div class="overview-description">
+                                    Equipment decommissioned
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- OVERALL AVAILABILITY -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/overall_availability.png'
+                                ) }}" alt="Overall Availability">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Overall Availability
+                                </div>
+
+                                <div class="overview-value">
+
+                                    {{
+                                    "%.1f"|format(
+                                    (
+                                    main_dashboard.operational_assets
+                                    /
+                                    main_dashboard.total_assets
+                                    * 100
+                                    )
+                                    if main_dashboard.total_assets
+                                    else 0
+                                    )
+                                    }}%
+
+                                </div>
+
+                                <div class="overview-description">
+                                    Operational assets / total assets
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- OVERALL READINESS -->
+
+                        <div class="overview-card">
+
+                            <div class="overview-icon">
+
+                                <img src="{{ url_for(
+                                    'static',
+                                    filename='images/dashboard/avg_readiness.png'
+                                ) }}" alt="Overall Readiness">
+
+                            </div>
+
+
+                            <div class="overview-content">
+
+                                <div class="overview-label">
+                                    Overall Readiness
+                                </div>
+
+                                <div class="overview-value">
+
+                                    {{
+                                    "%.1f"|format(
+                                    main_dashboard.readiness_summary.readiness
+                                    or 0
+                                    )
+                                    }}%
+
+                                </div>
+
+                                <div class="overview-description">
+                                    Combined readiness score
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+             ASSET CONDITION
+             ================================================= -->
+
+            <section class="dashboard-panel condition-panel">
+
+                <div class="panel-header">
+
+                    <div class="panel-title">
+                        Asset Condition
+                    </div>
+
+                    <div class="panel-subtitle">
+                        Distribution of equipment by service condition
+                    </div>
+
+                </div>
+
+
+                <div class="panel-body">
+
+
+                    {% set condition_ns = namespace(total=0) %}
+
+                    {% for row in main_dashboard.condition_summary %}
+
+                    {% set condition_ns.total =
+                    condition_ns.total +
+                    (row.asset_count | int)
+                    %}
+
+                    {% endfor %}
+
+                    {% set condition_total = condition_ns.total %}
+
+
+                    {% if main_dashboard.condition_summary %}
+
+
+                    <div class="condition-bars">
+
+
+                        {% for row in main_dashboard.condition_summary %}
+
+
+                        {% set value =
+                        row.asset_count | int
+                        %}
+
+
+                        {% set percentage =
+                        (
+                        value
+                        /
+                        condition_total
+                        *
+                        100
+                        )
+                        if condition_total
+                        else 0
+                        %}
+
+
+                        {% set condition_name =
+                        row.condition
+                        %}
+
+
+                        {% if condition_name == "Excellent" %}
+
+                        {% set bar_class = "bar-excellent" %}
+
+                        {% elif condition_name == "Good" %}
+
+                        {% set bar_class = "bar-good" %}
+
+                        {% elif condition_name == "Fair" %}
+
+                        {% set bar_class = "bar-fair" %}
+
+                        {% elif condition_name == "Poor" %}
+
+                        {% set bar_class = "bar-poor" %}
+
+                        {% else %}
+
+                        {% set bar_class = "bar-default" %}
+
+                        {% endif %}
+
+
+                        <div class="condition-row"
+                             data-tooltip="{{ condition_name }}: {{ value }} assets ({{ "%.1f"|format(percentage) }}%)">
+
+
+                            <div class="bar-label">
+                                {{ condition_name }}
+                            </div>
+
+
+                            <div class="bar-track">
+
+                                <div class="bar-fill {{ bar_class }}" style="width: {{ percentage }}%;"></div>
+
+                            </div>
+
+
+                            <div class="condition-value">
+                                <strong>{{ value }}</strong>
+                                <span>{{ "%.1f"|format(percentage) }}%</span>
+                            </div>
+
+
+                        </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                    <div class="bar-scale">
+
+                        <span>0</span>
+
+                        <span>
+                            {{ condition_total // 4 }}
+                        </span>
+
+                        <span>
+                            {{ condition_total // 2 }}
+                        </span>
+
+                        <span>
+                            {{ (condition_total * 3) // 4 }}
+                        </span>
+
+                        <span>
+                            {{ condition_total }}
+                        </span>
+
+                    </div>
+
+
+                    {% else %}
+
+
+                    <div class="empty-state">
+                        No asset condition data available.
+                    </div>
+
+
+                    {% endif %}
+
+
+                </div>
+
+            </section>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+         UNIT COMPARISON
+         ===================================================== -->
+
+        <div class="section-title">
+            Unit Comparison
+        </div>
+
+
+        <div class="panel unit-comparison-panel">
+
+
+            <div class="table-wrap">
+
+
+                <table>
+
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Unit
+                            </th>
+
+                            <th>
+                                Total Assets
+                            </th>
+
+                            <th>
+                                Decommissioned
+                            </th>
+
+                            <th>
+                                Availability
+                            </th>
+
+                            <th>
+                                Serviceability
+                            </th>
+
+                            <th>
+                                Maintenance
+                            </th>
+
+                            <th>
+                                Readiness
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+
+                        {% for unit in main_dashboard.unit_asset_summary %}
+
+
+                        <tr class="unit-comparison-row"
+                            tabindex="0"
+                            role="link"
+                            onclick="window.location.href='{{ url_for('dashboard.unit_dashboard', unit_id=unit.unit_id) }}'"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); window.location.href='{{ url_for('dashboard.unit_dashboard', unit_id=unit.unit_id) }}'; }">
+
+                            <td>
+
+                                <div class="unit-cell">
+
+                                    {% set unit_logo = unit.unit_id.replace('UNIT-', 'unit_') ~ '.png' %}
+
+                                    <img
+                                        class="unit-comparison-logo"
+                                        src="{{ url_for('static', filename='images/units/' ~ unit_logo) }}"
+                                        alt="{{ unit.unit_id }} logo"
+                                        loading="lazy"
+                                    >
+
+                                    <div>
+
+                                        <strong>
+                                            {{ unit.unit_id }}
+                                        </strong>
+
+                                        <br>
+
+                                        <small>
+                                            {{ unit.unit_name }}
+                                        </small>
+
+                                    </div>
+
+                                </div>
+
+                            </td>
+
+
+                            <td>
+                                {{ unit.total_assets }}
+                            </td>
+
+
+                            <td>
+                                {{ unit.decommissioned_assets }}
+                            </td>
+
+
+                            <td>
+                                {{
+                                "%.1f"|format(
+                                unit.get("availability", 0)
+                                )
+                                }}%
+                            </td>
+
+
+                            <td>
+                                {{
+                                "%.1f"|format(
+                                unit.get("serviceability", 0)
+                                )
+                                }}%
+                            </td>
+
+
+                            <td>
+                                {{
+                                "%.1f"|format(
+                                unit.get(
+                                "maintenance_compliance",
+                                0
+                                )
+                                )
+                                }}%
+                            </td>
+
+
+                            <td>
+
+                                <div class="progress">
+                                    <span style="width: {{ unit.get("readiness", 0) }}%;"></span>
+                                </div>
+
+                                {{
+                                "%.1f"|format(unit.get("readiness", 0)) }}%
+                            </td>
+
+
+                        </tr>
+
+
+                        {% endfor %}
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+         READINESS ANALYSIS
+         ===================================================== -->
+
+        <div class="section-title">
+            Readiness Analysis
+        </div>
+
+
+        <div class="readiness-grid">
+
+
+            <!-- READINESS SUMMARY CARD -->
+
+            <div class="readiness-card">
+
+                <div class="readiness-card-title">Readiness Indicators</div>
+
+                <div class="readiness-summary">
+
+
+                        <div class="mini-card">
+
+                            <div class="mini-label">
+                                Overall Readiness
+                            </div>
+
+                            <div class="mini-value">
+
+                                {{
+                                "%.1f"|format(
+                                main_dashboard.readiness_summary.readiness
+                                or 0
+                                )
+                                }}%
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-card">
+
+                            <div class="mini-label">
+                                Availability
+                            </div>
+
+                            <div class="mini-value">
+
+                                {{
+                                "%.1f"|format(
+                                main_dashboard.readiness_summary.availability
+                                or 0
+                                )
+                                }}%
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-card">
+
+                            <div class="mini-label">
+                                Serviceability
+                            </div>
+
+                            <div class="mini-value">
+
+                                {{
+                                "%.1f"|format(
+                                main_dashboard.readiness_summary.serviceability
+                                or 0
+                                )
+                                }}%
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="mini-card">
+
+                            <div class="mini-label">
+                                Maintenance Compliance
+                            </div>
+
+                            <div class="mini-value">
+
+                                {{
+                                "%.1f"|format(
+                                main_dashboard.readiness_summary.maintenance_compliance
+                                or 0
+                                )
+                                }}%
+
+                            </div>
+
+                        </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- READINESS BAR CHART CARD -->
+
+            <div class="readiness-card">
+
+                <div class="readiness-card-title">Readiness Breakdown</div>
+
+                    {% set readiness_items = [
+
+                    (
+                    "Availability",
+                    main_dashboard.readiness_summary.availability or 0
+                    ),
+
+                    (
+                    "Serviceability",
+                    main_dashboard.readiness_summary.serviceability or 0
+                    ),
+
+                    (
+                    "Maintenance Compliance",
+                    main_dashboard.readiness_summary.maintenance_compliance or 0
+                    ),
+
+                    (
+                    "Overall Readiness",
+                    main_dashboard.readiness_summary.readiness or 0
+                    )
+
+                    ] %}
+
+
+                    <div class="readiness-bars">
+
+
+                        {% for item in readiness_items %}
+
+                        {% if item[0] == "Availability" %}
+                            {% set readiness_bar_class = "bar-readiness-availability" %}
+                        {% elif item[0] == "Serviceability" %}
+                            {% set readiness_bar_class = "bar-readiness-serviceability" %}
+                        {% elif item[0] == "Maintenance Compliance" %}
+                            {% set readiness_bar_class = "bar-readiness-maintenance" %}
+                        {% else %}
+                            {% set readiness_bar_class = "bar-readiness-overall" %}
+                        {% endif %}
+
+
+                        <div class="bar-row">
+
+
+                            <div class="bar-label" title="{{ item[0] }}">
+                                {{ item[0] }}
+                            </div>
+
+
+                            <div class="bar-track">
+
+                                <div class="bar-fill {{ readiness_bar_class }}"
+                                     style="width: {{ item[1] }}%;"></div>
+
+                            </div>
+
+
+                            <div class="bar-value">
+
+                                {{
+                                "%.1f"|format(item[1])
+                                }}%
+
+                            </div>
+
+
+                        </div>
+
+
+                        {% endfor %}
+
+
+                    </div>
+
+
+                    <div class="bar-scale"
+                         style="margin-left: 187px; margin-right: 65px;">
+
+                        <span>0%</span>
+
+                        <span>25%</span>
+
+                        <span>50%</span>
+
+                        <span>75%</span>
+
+                        <span>100%</span>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+        <!-- =====================================================
+         MAINTENANCE OVERVIEW
+         ===================================================== -->
+
+        <div class="section-title">
+            Maintenance Overview
+        </div>
+
+
+        <div class="maintenance-grid">
+
+
+            <!-- MAINTENANCE BARS -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+                    Maintenance Status
+                </div>
+
+
+                {% set maintenance_items = [
+
+                (
+                "Scheduled",
+                main_dashboard.maintenance_summary.scheduled or 0,
+                "bar-scheduled"
+                ),
+
+                (
+                "In Progress",
+                main_dashboard.maintenance_summary.in_progress or 0,
+                "bar-in-progress"
+                ),
+
+                (
+                "Pending Confirmation",
+                main_dashboard.maintenance_summary.pending_confirmation or 0,
+                "bar-pending"
+                ),
+
+                (
+                "Completed",
+                main_dashboard.maintenance_summary.completed or 0,
+                "bar-completed"
+                ),
+
+                (
+                "Overdue",
+                main_dashboard.maintenance_summary.overdue or 0,
+                "bar-overdue"
+                )
+
+                ] %}
+
+
+                {% set maintenance_ns = namespace(max=0) %}
+
+
+                {% for item in maintenance_items %}
+
+                {% if item[1] > maintenance_ns.max %}
+
+                {% set maintenance_ns.max = item[1] %}
+
+                {% endif %}
+
+                {% endfor %}
+
+                {% set maintenance_max = maintenance_ns.max %}
+
+
+                <div class="maintenance-bars">
+
+
+                    {% for item in maintenance_items %}
+
+
+                    {% set percentage =
+
+                    (
+                    item[1]
+                    /
+                    maintenance_max
+                    *
+                    100
+                    )
+
+                    if maintenance_max
+
+                    else 0
+
+                    %}
+
+
+                    <div class="bar-row">
+
+
+                        <div class="bar-label" title="{{ item[0] }}">
+                            {{ item[0] }}
+                        </div>
+
+
+                        <div class="bar-track">
+
+                            <div class="bar-fill {{ item[2] }}" style="width: {{ percentage }}%;"></div>
+
+                        </div>
+
+
+                        <div class="bar-value">
+                            {{ item[1] }}
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- MAINTENANCE SUMMARY -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+                    Maintenance Summary
+                </div>
+
+
+                <table class="summary-table">
+
+
+                    <tr>
+
+                        <td>
+                            Scheduled
+                        </td>
+
+                        <td>
+                            {{ main_dashboard.maintenance_summary.scheduled }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            In Progress
+                        </td>
+
+                        <td>
+                            {{ main_dashboard.maintenance_summary.in_progress }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Pending Confirmation
+                        </td>
+
+                        <td>
+                            {{ main_dashboard.maintenance_summary.pending_confirmation }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Completed
+                        </td>
+
+                        <td>
+                            {{ main_dashboard.maintenance_summary.completed }}
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            Overdue
+                        </td>
+
+                        <td>
+                            {{ main_dashboard.maintenance_summary.overdue }}
+                        </td>
+
+                    </tr>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+         INVENTORY OVERVIEW
+         ===================================================== -->
+
+        <div class="section-title">
+            Inventory Overview
+        </div>
+
+
+        <div class="inventory-kpi-grid">
+
+
+            <div class="inventory-kpi">
+
+                <div class="inventory-kpi-label">
+                    Inventory Items
+                </div>
+
+                <div class="inventory-kpi-value">
+                    {{ main_dashboard.inventory_summary.total_items }}
+                </div>
+
+            </div>
+
+
+            <div class="inventory-kpi">
+
+                <div class="inventory-kpi-label">
+                    Total Quantity
+                </div>
+
+                <div class="inventory-kpi-value">
+                    {{ main_dashboard.inventory_summary.total_quantity }}
+                </div>
+
+            </div>
+
+
+            <div class="inventory-kpi">
+
+                <div class="inventory-kpi-label">
+                    Low Stock Items
+                </div>
+
+                <div class="inventory-kpi-value">
+                    {{ main_dashboard.inventory_summary.low_stock_items }}
+                </div>
+
+            </div>
+
+
+            <div class="inventory-kpi">
+
+                <div class="inventory-kpi-label">
+                    Units With Inventory
+                </div>
+
+                <div class="inventory-kpi-value">
+                    {{ main_dashboard.inventory_by_unit|length }}
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="inventory-grid">
+
+
+            <!-- INVENTORY BY CATEGORY -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+                    Inventory by Category
+                </div>
+
+
+                {% set inventory_category_ns = namespace(max=0) %}
+
+
+                {% for row in main_dashboard.inventory_by_category %}
+
+                {% if row.quantity|int > inventory_category_ns.max %}
+
+                {% set inventory_category_ns.max =
+                row.quantity|int
+                %}
+
+                {% endif %}
+
+                {% endfor %}
+
+                {% set inventory_category_max = inventory_category_ns.max %}
+
+
+                {% if main_dashboard.inventory_by_category %}
+
+
+                <div class="horizontal-bars inventory-category-bars">
+
+
+                    {% for row in main_dashboard.inventory_by_category %}
+
+
+                    {% set inventory_color =
+                        "bar-inventory-1" if loop.index0 % 6 == 0 else
+                        "bar-inventory-2" if loop.index0 % 6 == 1 else
+                        "bar-inventory-3" if loop.index0 % 6 == 2 else
+                        "bar-inventory-4" if loop.index0 % 6 == 3 else
+                        "bar-inventory-5" if loop.index0 % 6 == 4 else
+                        "bar-inventory-6"
+                    %}
+
+
+                    {% set percentage =
+
+                    (
+                    row.quantity|int
+                    /
+                    inventory_category_max
+                    *
+                    100
+                    )
+
+                    if inventory_category_max
+
+                    else 0
+
+                    %}
+
+
+                    <div class="bar-row">
+
+
+                        <div class="bar-label" title="{{ row.category }}">
+                            {{ row.category }}
+                        </div>
+
+
+                        <div class="bar-track">
+
+                            <div class="bar-fill {{ inventory_color }}" style="width: {{ percentage }}%;"></div>
+
+                        </div>
+
+
+                        <div class="bar-value">
+                            {{ row.quantity }}
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                {% else %}
+
+
+                <div class="empty-state">
+                    No inventory category data available.
+                </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+
+            <!-- INVENTORY BY UNIT -->
+
+            <div class="panel">
+
+
+                <div class="panel-title">
+                    Inventory by Unit
+                </div>
+
+
+                {% set inventory_unit_ns = namespace(max=0) %}
+
+
+                {% for row in main_dashboard.inventory_by_unit %}
+
+                {% if row.quantity|int > inventory_unit_ns.max %}
+
+                {% set inventory_unit_ns.max =
+                row.quantity|int
+                %}
+
+                {% endif %}
+
+                {% endfor %}
+
+                {% set inventory_unit_max = inventory_unit_ns.max %}
+
+
+                {% if main_dashboard.inventory_by_unit %}
+
+
+                <div class="horizontal-bars">
+
+
+                    {% for row in main_dashboard.inventory_by_unit %}
+
+
+                    {% set percentage =
+
+                    (
+                    row.quantity|int
+                    /
+                    inventory_unit_max
+                    *
+                    100
+                    )
+
+                    if inventory_unit_max
+
+                    else 0
+
+                    %}
+
+
+                    <div class="bar-row">
+
+
+                        <div class="bar-label" title="{{ row.unit_id }}">
+                            {{ row.unit_id }}
+                        </div>
+
+
+                        <div class="bar-track">
+
+                            <div class="bar-fill bar-readiness" style="width: {{ percentage }}%;"></div>
+
+                        </div>
+
+
+                        <div class="bar-value">
+                            {{ row.quantity }}
+                        </div>
+
+
+                    </div>
+
+
+                    {% endfor %}
+
+
+                </div>
+
+
+                {% else %}
+
+
+                <div class="empty-state">
+                    No inventory unit data available.
+                </div>
+
+
+                {% endif %}
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- =====================================================
+         FOOTER
+         ===================================================== -->
+
+        <div class="footer">
+
+            MLERMS Main Dashboard
+
+        </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+
+        const totalAssets =
+            Number(
+                {{ main_dashboard.total_assets or 0 }}
+        );
+
+
+        const operationalAssets =
+            Number(
+                {{ main_dashboard.operational_assets or 0 }}
+        );
+
+
+        const maintenanceAssets =
+            Number(
+                {{ main_dashboard.under_maintenance_assets or 0 }}
+        );
+
+
+        const overdueAssets =
+            Number(
+                {{ main_dashboard.overdue_assets or 0 }}
+        );
+
+
+        const decommissionedAssets =
+            Number(
+                {{ main_dashboard.decommissioned_assets or 0 }}
+        );
+
+
+        /* =========================================================
+           PERCENTAGES
+           ========================================================= */
+
+        const operationalPercent =
+            totalAssets > 0
+                ? (operationalAssets / totalAssets) * 100
+                : 0;
+
+
+        const maintenancePercent =
+            totalAssets > 0
+                ? (maintenanceAssets / totalAssets) * 100
+                : 0;
+
+
+        const overduePercent =
+            totalAssets > 0
+                ? (overdueAssets / totalAssets) * 100
+                : 0;
+
+
+        const decommissionedPercent =
+            totalAssets > 0
+                ? (decommissionedAssets / totalAssets) * 100
+                : 0;
+
+
+
+        /* =========================================================
+           GAUGE ELEMENTS
+           ========================================================= */
+
+        const operationalPath =
+            document.getElementById(
+                "operationalPath"
+            );
+
+
+        const maintenancePath =
+            document.getElementById(
+                "maintenancePath"
+            );
+
+
+        const overduePath =
+            document.getElementById(
+                "overduePath"
+            );
+
+
+        const decommissionedPath =
+            document.getElementById(
+                "decommissionedPath"
+            );
+
+
+        const gaugeTooltip =
+            document.getElementById(
+                "assetGaugeTooltip"
+            );
+
+
+        const gaugeCenterValue =
+            document.getElementById(
+                "gaugeCenterValue"
+            );
+
+
+
+        /* =========================================================
+           GAUGE SEGMENT
+           ========================================================= */
+
+       function setGaugeSegment(
+    element,
+    percentage,
+    offset
+) {
+
+    const safePercentage =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                percentage
+            )
+        );
+
+
+    /*
+     * Use a fixed 100-unit gap instead of
+     * (100 - percentage).
+     *
+     * This prevents the rounded SVG stroke
+     * from wrapping around to the beginning
+     * of the gauge.
+     */
+
+    element.style.strokeDasharray =
+        safePercentage +
+        " 100";
+
+
+    element.style.strokeDashoffset =
+        -offset;
+
+}
+
+
+
+        /* =========================================================
+           SET GAUGE
+           ========================================================= */
+
+        setGaugeSegment(
+            operationalPath,
+            operationalPercent,
+            0
+        );
+
+
+        setGaugeSegment(
+            maintenancePath,
+            maintenancePercent,
+            operationalPercent
+        );
+
+
+        setGaugeSegment(
+            overduePath,
+            overduePercent,
+            operationalPercent +
+            maintenancePercent
+        );
+
+
+        setGaugeSegment(
+            decommissionedPath,
+            decommissionedPercent,
+            operationalPercent +
+            maintenancePercent +
+            overduePercent
+        );
+
+
+
+        /* =========================================================
+           CENTER VALUE
+           ========================================================= */
+
+        gaugeCenterValue.textContent =
+            operationalPercent.toFixed(1) +
+            "%";
+
+
+
+        /* =========================================================
+           LEGEND VALUES
+           ========================================================= */
+
+        document.getElementById(
+            "operationalLegend"
+        ).textContent =
+            operationalAssets.toLocaleString();
+
+
+        document.getElementById(
+            "maintenanceLegend"
+        ).textContent =
+            maintenanceAssets.toLocaleString();
+
+
+        document.getElementById(
+            "overdueLegend"
+        ).textContent =
+            overdueAssets.toLocaleString();
+
+
+        document.getElementById(
+            "decommissionedLegend"
+        ).textContent =
+            decommissionedAssets.toLocaleString();
+
+
+
+        /* =========================================================
+           GAUGE INTERACTION
+           ========================================================= */
+
+        const gaugeSegments = [
+
+            {
+                element: operationalPath,
+
+                name: "Operational",
+
+                value: operationalAssets,
+
+                percentage: operationalPercent
+            },
+
+            {
+                element: maintenancePath,
+
+                name: "Under Maintenance",
+
+                value: maintenanceAssets,
+
+                percentage: maintenancePercent
+            },
+
+            {
+                element: overduePath,
+
+                name: "Overdue",
+
+                value: overdueAssets,
+
+                percentage: overduePercent
+            },
+
+            {
+                element: decommissionedPath,
+
+                name: "Decommissioned",
+
+                value: decommissionedAssets,
+
+                percentage: decommissionedPercent
+            }
+
+        ];
+
+
+
+        gaugeSegments.forEach(
+            function (segment) {
+
+
+                segment.element.addEventListener(
+                    "mouseenter",
+                    function () {
+
+
+                        gaugeSegments.forEach(
+                            function (other) {
+
+                                if (
+                                    other !==
+                                    segment
+                                ) {
+
+                                    other.element.style.opacity =
+                                        "0.28";
+
+                                }
+
+                            }
+                        );
+
+
+                        gaugeTooltip.innerHTML =
+
+                            "<strong>" +
+                            segment.name +
+                            "</strong>" +
+
+                            "<br>" +
+
+                            segment.value.toLocaleString() +
+
+                            " assets" +
+
+                            "<br>" +
+
+                            segment.percentage.toFixed(1) +
+
+                            "%";
+
+
+                        gaugeTooltip.classList.add(
+                            "show"
+                        );
+
+                    }
+                );
+
+
+                segment.element.addEventListener(
+                    "mouseleave",
+                    function () {
+
+
+                        gaugeSegments.forEach(
+                            function (other) {
+
+                                other.element.style.opacity =
+                                    "1";
+
+                            }
+                        );
+
+
+                        gaugeTooltip.classList.remove(
+                            "show"
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    </script>
+{% endblock %}

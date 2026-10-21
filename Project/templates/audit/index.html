@@ -1,0 +1,1625 @@
+{% extends "base.html" %}
+
+{% block title %}{{ selected_unit['unit_name'] }} - Audit &amp; Reporting | MLERMS{% endblock %}
+
+{% block head_extra %}
+<style>
+* { box-sizing: border-box; }
+
+:root {
+    --mlerms-navy: #172033;
+    --mlerms-green: #238b5b;
+    --mlerms-green-dark: #1d754d;
+    --mlerms-border: #dbe1e5;
+    --mlerms-muted: #687487;
+    --mlerms-text: #182235;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--mlerms-text);
+    background:
+         linear-gradient(180deg, rgba(12, 22, 35, .18) 0%, rgba(23,32,51,.98) 50%, rgba(23,32,51,.98) 100%),
+        url("{{ url_for('static', filename='images/dashboard/main_dashboard_bg.png') }}")
+        center top / cover fixed no-repeat;
+}
+
+a { text-decoration: none; }
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 94px;
+    padding: 0 36px;
+    background: rgba(23,32,51,.98);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 4px 18px rgba(10,18,30,.18);
+}
+
+.topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        #f27a22 0 33.33%,
+        #dfe6e1 33.33% 66.66%,
+        #587b59 66.66% 100%
+    );
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-logo {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    flex: 0 0 54px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,.22));
+}
+
+.brand-name {
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: .7px;
+    color: #fff;
+}
+
+.brand small {
+    display: block;
+    margin-top: 5px;
+    font-size: 9.5px;
+    color: #c4ccd7;
+    white-space: nowrap;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.user-welcome {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 9px 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    background: rgba(255,255,255,.045);
+    color: #eef2f6;
+}
+
+.welcome-label {
+    color: #aeb8c7;
+    font-size: 11px;
+}
+
+.user-welcome strong {
+    color: #fff;
+    font-size: 12px;
+}
+
+.logout {
+    padding: 9px 16px;
+    border: 1px solid #637087;
+    border-radius: 8px;
+    color: #fff;
+    background: rgba(255,255,255,.025);
+    font-size: 12px;
+    font-weight: 600;
+    transition: .15s ease;
+}
+
+.logout:hover {
+    background: var(--mlerms-green-dark);
+    border-color: #6f936f;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   PAGE / UNIT COVER
+   ========================================================= */
+
+.page {
+    width: min(100%, 1660px);
+    margin: 0 auto;
+    padding: 8px 24px 38px;
+}
+
+.page-title {
+    position: relative;
+    min-height: 200px;
+    margin-bottom: 18px;
+    padding: 35px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: rgba(255,255,255,.90);
+    border: 1px solid rgba(219,225,229,.95);
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(15,23,42,.07);
+    backdrop-filter: blur(7px);
+    overflow: hidden;
+}
+
+.page-title-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+    opacity: .88;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0,0,0,.45) 22%,
+        #000 55%
+    );
+    mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0,0,0,.45) 22%,
+        #000 55%
+    );
+}
+
+.page-title-main {
+    position: relative;
+    z-index: 2;
+    max-width: 62%;
+}
+
+.page-eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: #315c3a;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1.15px;
+}
+
+.page-title h1 {
+    margin: 0;
+    color: var(--mlerms-navy);
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.page-title p {
+    margin: 6px 0 0;
+    color: #6c7787;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.page-title-accent {
+    position: relative;
+    z-index: 2;
+    width: 128px;
+    height: 4px;
+    flex: 0 0 128px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        #e87824 0 33%,
+        #dce3e0 33% 66%,
+        #4f7b4f 66% 100%
+    );
+}
+
+/* =========================================================
+   QUICK ACCESS
+   ========================================================= */
+
+.quick-access {
+    margin-bottom: 18px;
+    padding: 18px 20px 20px;
+    background: rgba(255,255,255,.95);
+    border: 1px solid var(--mlerms-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15,23,42,.055);
+    backdrop-filter: blur(7px);
+}
+
+.quick-access-header {
+    margin-bottom: 14px;
+}
+
+.quick-access-title {
+    margin: 0;
+    color: var(--mlerms-navy);
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.quick-access-subtitle {
+    margin: 4px 0 0;
+    color: var(--mlerms-muted);
+    font-size: 11px;
+}
+
+.quick-access-back {
+    margin-top: 10px;
+}
+
+.quick-access-back .back-unit-dashboard {
+    min-height: 34px;
+    padding: 8px 14px;
+    font-size: 11px;
+    border-radius: 8px;
+}
+
+.back-unit-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    padding: 9px 15px;
+    border: 1px solid #cfd7de;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--mlerms-navy);
+    font-size: 12px;
+    font-weight: 700;
+    transition: .15s ease;
+}
+
+.back-unit-dashboard:hover {
+    background: #f5f7f9;
+    border-color: #aeb9c3;
+    color: var(--mlerms-navy);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15,23,42,.08);
+}
+
+.module-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.module-card {
+    min-height: 86px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 15px;
+    border: 1px solid #dfe5e9;
+    border-radius: 11px;
+    background: #fff;
+    color: var(--mlerms-navy);
+    box-shadow: 0 2px 8px rgba(15,23,42,.035);
+    transition: .15s ease;
+}
+
+.module-card:hover {
+    border-color: #b9c5cd;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(15,23,42,.07);
+}
+
+.module-card.active {
+    border-color: #238b5b;
+    box-shadow:
+        inset 0 0 0 1px rgba(35,139,91,.16),
+        0 7px 16px rgba(15,23,42,.07);
+    background: #f8fbf9;
+}
+
+.module-card-icon {
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+    object-fit: contain;
+}
+
+.module-card-text {
+    min-width: 0;
+    flex: 1;
+}
+
+.module-card-title {
+    color: var(--mlerms-navy);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.module-card-description {
+    margin-top: 3px;
+    color: #788493;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.module-arrow {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--mlerms-navy);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* =========================================================
+   INVENTORY CARD
+   ========================================================= */
+
+.inventory-card {
+    background: rgba(255,255,255,.97);
+    border: 1px solid var(--mlerms-border);
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(15,23,42,.065);
+    overflow: hidden;
+}
+
+.inventory-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 20px 22px 18px;
+    border-bottom: 1px solid #e7ebee;
+    background: #fff;
+}
+
+.inventory-card-title {
+    color: var(--mlerms-navy);
+    font-size: 17px;
+    line-height: 1.2;
+    font-weight: 800;
+}
+
+.inventory-card-subtitle {
+    margin-top: 4px;
+    color: var(--mlerms-muted);
+    font-size: 11px;
+}
+
+.asset-add-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 9px 15px;
+    border: 1px solid #238b5b;
+    border-radius: 9px;
+    background: #238b5b;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: .15s ease;
+}
+
+.asset-add-button:hover {
+    background: #1d754d;
+    border-color: #1d754d;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(35,139,91,.18);
+}
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.inventory-table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.inventory-table {
+    width: 100%;
+    min-width: 1120px;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+}
+
+.inventory-table thead th {
+    padding: 12px 13px;
+    background: var(--mlerms-navy);
+    color: #fff;
+    border: 0;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .65px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.inventory-table tbody td {
+    padding: 12px 13px;
+    border: 0;
+    border-bottom: 1px solid #edf0f3;
+    color: #344054;
+    font-size: 12px;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.inventory-table tbody tr {
+    transition: background .15s ease;
+}
+
+.inventory-table tbody tr:hover {
+    background: #f8fafb;
+}
+
+.inventory-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.item-id {
+    font-weight: 800;
+    color: var(--mlerms-navy);
+    font-size: 11px;
+}
+
+.item-name {
+    font-weight: 800;
+    color: #23324a;
+}
+
+.category-text {
+    color: #566477;
+    font-size: 11px;
+}
+
+.quantity-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 29px;
+    padding: 4px 9px;
+    border-radius: 8px;
+    background: #f2f5f7;
+    border: 1px solid #e0e5e9;
+    color: var(--mlerms-navy);
+    font-weight: 800;
+}
+
+.stock-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 27px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.stock-sufficient {
+    background: #dff6e8;
+    color: #187447;
+}
+
+.stock-low {
+    background: #fff0d9;
+    color: #a45f08;
+}
+
+.inventory-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.inventory-actions form {
+    margin: 0;
+}
+
+.action-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 31px;
+    padding: 6px 10px;
+    border-radius: 7px;
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.action-edit {
+    border: 1px solid #b8d5e8;
+    background: #f4f9fc;
+    color: #24618c;
+}
+
+.action-edit:hover {
+    background: #e8f3f9;
+    border-color: #91bdd7;
+    color: #174e76;
+    transform: translateY(-1px);
+}
+
+.action-delete {
+    border: 1px solid #efb5bb;
+    background: #fff6f7;
+    color: #b23845;
+}
+
+.action-delete:hover {
+    background: #fde9eb;
+    border-color: #df8f98;
+    color: #942c38;
+    transform: translateY(-1px);
+}
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+    padding: 64px 20px;
+    text-align: center;
+    color: #6f7b89;
+    font-size: 12px;
+}
+
+.empty-state-title {
+    margin-bottom: 5px;
+    color: var(--mlerms-navy);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1250px) {
+    .module-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .topbar { padding: 0 20px; }
+    .page { padding: 8px 18px 28px; }
+    .page-title { min-height: 150px; }
+    .page-title-main { max-width: 75%; }
+    .module-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+    .topbar {
+        min-height: 78px;
+        height: auto;
+        padding: 0 15px;
+    }
+
+    .brand-logo {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+
+    .brand-name { font-size: 21px; }
+    .brand small { display: none; }
+
+    .user-welcome { padding: 7px 8px; }
+    .welcome-label { display: none; }
+
+    .page { padding: 8px 14px 24px; }
+
+    .page-title {
+        min-height: 150px;
+        padding: 24px 16px;
+    }
+
+    .page-title-main { max-width: 100%; }
+
+    .page-title-cover {
+        opacity: .60;
+        -webkit-mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,0,0,.35) 30%,
+            #000 70%
+        );
+        mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,0,0,.35) 30%,
+            #000 70%
+        );
+    }
+
+    .page-title h1 { font-size: 24px; }
+    .page-title-accent { display: none; }
+
+    .module-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .inventory-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .asset-add-button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-area { gap: 6px; }
+    .logout { padding: 8px 10px; }
+
+    .back-unit-dashboard {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+    
+/* AUDIT & REPORTING — shared MLERMS panel and table styling */
+.audit-content { padding-bottom: 8px; }
+.audit-summary-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:18px; }
+.audit-summary-card {
+    position:relative; min-height:118px; padding:20px 22px; background:#fff;
+    border:1px solid #dbe1e5; border-radius:14px; box-shadow:0 4px 14px rgba(15,23,42,.055);
+    overflow:hidden;
+}
+.audit-summary-card::before { content:""; position:absolute; inset:0 auto 0 0; width:4px; background:var(--summary-accent,#238b5b); }
+.audit-summary-label { color:#687487; font-size:10px; font-weight:800; letter-spacing:.8px; text-transform:uppercase; }
+.audit-summary-value { margin-top:10px; color:#172033; font-size:28px; line-height:1; font-weight:800; }
+.audit-summary-card:nth-child(2) { --summary-accent:#4c8fc4; }
+.audit-summary-card:nth-child(3) { --summary-accent:#e87824; }
+.audit-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+.audit-panel {
+    min-width:0; margin-top:18px; background:rgba(255,255,255,.97); border:1px solid #dbe1e5;
+    border-radius:16px; box-shadow:0 5px 18px rgba(15,23,42,.065); overflow:hidden;
+}
+.audit-panel-header { padding:19px 22px 15px; background:#fff; border-bottom:1px solid #e7ebee; }
+.audit-panel-title { color:#172033; font-size:17px; line-height:1.2; font-weight:800; }
+.audit-panel-subtitle { margin-top:5px; color:#687487; font-size:11px; line-height:1.45; }
+.audit-panel-body { padding:19px 22px; }
+.audit-report-list { list-style:none; padding:0; margin:0; }
+.audit-report-scroll { max-height:260px; overflow:auto; padding-right:5px; }
+.audit-report-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid #edf0f3; }
+.audit-report-item:last-child { border-bottom:0; }
+.audit-report-name { color:#344054; font-size:12px; font-weight:700; overflow-wrap:anywhere; }
+.audit-report-count { min-width:40px; padding:6px 10px; text-align:center; border-radius:8px; background:#edf7f1; border:1px solid #d9ebdf; color:#187447; font-size:11px; font-weight:800; }
+.audit-filter-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:14px; }
+.audit-filter-field { min-width:0; }
+.audit-filter-label { display:block; margin-bottom:6px; color:#374151; font-size:11px; font-weight:800; }
+.audit-filter-select, .audit-filter-control {
+    width:100%; min-height:40px; padding:8px 10px; border:1px solid #d1d9df; border-radius:8px;
+    background:#fff; color:#344054; font-size:12px;
+}
+.audit-filter-select:focus, .audit-filter-control:focus { outline:none; border-color:#238b5b; box-shadow:0 0 0 3px rgba(35,139,91,.12); }
+.audit-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:18px; }
+.audit-button { display:inline-flex; align-items:center; justify-content:center; min-height:37px; padding:9px 14px; border:1px solid transparent; border-radius:8px; font-size:11px; font-weight:800; cursor:pointer; transition:.15s ease; }
+.audit-button:hover { transform:translateY(-1px); }
+.audit-button-primary { background:#238b5b; color:#fff; border-color:#238b5b; }
+.audit-button-primary:hover { background:#1d754d; color:#fff; }
+.audit-button-secondary { background:#fff; color:#344054; border-color:#cfd7de; }
+.audit-button-export { background:#172033; color:#fff; border-color:#172033; }
+.audit-button-export:hover { background:#26354e; color:#fff; }
+.audit-table-wrap { width:100%; overflow-x:auto; }
+.audit-table { width:100%; min-width:950px; border-collapse:separate; border-spacing:0; background:#fff; }
+.audit-table thead th { padding:12px 13px; background:#172033; color:#fff; border:0; font-size:10px; text-transform:uppercase; letter-spacing:.65px; font-weight:800; white-space:nowrap; text-align:left; }
+.audit-table tbody td { padding:12px 13px; border:0; border-bottom:1px solid #edf0f3; color:#344054; font-size:12px; vertical-align:middle; }
+.audit-table tbody tr:hover { background:#f8fafb; }
+.audit-table tbody tr:last-child td { border-bottom:0; }
+.audit-badge { display:inline-flex; align-items:center; padding:5px 9px; border-radius:999px; font-size:10px; font-weight:800; white-space:nowrap; background:#e2f5e9; color:#187447; }
+.module-badge { background:#edf0ff; color:#4338ca; }
+.audit-empty { padding:36px 20px; text-align:center; color:#778292; font-size:12px; }
+@media(max-width:1100px) { .audit-filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media(max-width:800px) { .audit-grid { grid-template-columns:1fr; } .audit-summary-grid { grid-template-columns:1fr; } .audit-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:520px) { .audit-filter-grid { grid-template-columns:1fr; } .audit-panel-body { padding:15px; } .audit-panel-header { padding:16px 15px; } }
+
+
+
+/* Audit overview arrangement follows the supplied wireframe */
+.audit-overview-layout {
+    display:grid;
+    grid-template-columns: minmax(165px, 0.42fr) minmax(0, 1fr);
+    gap:12px;
+    align-items:stretch;
+    margin-top:18px;
+}
+.audit-summary-stack {
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:repeat(3,minmax(54px,auto));
+    gap:8px;
+    min-width:0;
+}
+.audit-summary-stack .audit-summary-card {
+    min-height:54px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    border-radius:12px;
+}
+.audit-summary-stack .audit-summary-label {
+    font-size:20px;
+    letter-spacing:.35px;
+}
+.audit-summary-stack .audit-summary-value {
+    margin:0;
+    font-size:18px !important;
+    white-space:nowrap;
+}
+.audit-report-pair {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    min-width:0;
+}
+.audit-report-pair > div { min-width:0; }
+.audit-report-pair .audit-panel { margin-top:0; height:100%; }
+.audit-report-pair .audit-panel-body { padding:12px 18px; }
+.audit-report-pair .audit-report-scroll { max-height:190px; }
+.audit-overview-layout + .audit-panel { margin-top:14px; }
+@media(max-width:760px) {
+    .audit-overview-layout { grid-template-columns:1fr; }
+    .audit-summary-stack { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:auto; }
+    .audit-summary-stack .audit-summary-card { display:block; padding:12px; }
+    .audit-summary-stack .audit-summary-value { margin-top:7px; }
+    .audit-report-pair { grid-template-columns:1fr; }
+}
+
+
+/* Refined audit summary cards */
+.audit-summary-stack {
+    gap: 10px;
+}
+.audit-summary-stack .audit-summary-card {
+    min-height: 76px;
+    padding: 14px 16px 14px 19px;
+    border-radius: 13px;
+    border: 1px solid rgba(214,222,229,.95);
+    background: linear-gradient(115deg, #ffffff 0%, #fbfcfd 100%);
+    box-shadow: 0 5px 14px rgba(23,32,51,.075);
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.audit-summary-stack .audit-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(23,32,51,.11);
+    border-color: #c7d3dc;
+}
+.audit-summary-stack .audit-summary-card::before {
+    width: 5px;
+    border-radius: 13px 0 0 13px;
+}
+.audit-summary-stack .audit-summary-label {
+    color: #65738a;
+    font-size: 13px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: .65px;
+}
+.audit-summary-stack .audit-summary-value {
+    color: #172033;
+    font-size: 25px !important;
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: -.5px;
+    font-variant-numeric: tabular-nums;
+}
+.audit-summary-stack .audit-summary-card:nth-child(1) .audit-summary-value {
+    color: #172033;
+}
+.audit-summary-stack .audit-summary-card:nth-child(2) .audit-summary-value {
+    color: #347fb4;
+}
+.audit-summary-stack .audit-summary-card:nth-child(3) .audit-summary-value {
+    color: #238b5b;
+    font-size: 21px !important;
+    letter-spacing: -.2px;
+}
+@media(max-width:760px) {
+    .audit-summary-stack { gap: 8px; }
+    .audit-summary-stack .audit-summary-card {
+        min-height: 90px;
+        padding: 12px;
+        border-radius: 11px;
+    }
+    .audit-summary-stack .audit-summary-label {
+        font-size: 11px;
+        letter-spacing: .35px;
+    }
+    .audit-summary-stack .audit-summary-value {
+        margin-top: 10px;
+        font-size: 22px !important;
+    }
+}
+
+
+
+/* CANONICAL MLERMS UI STANDARD — shared components */
+:root {
+    --mlerms-navy:#172033; --mlerms-green:#4f7b4f; --mlerms-green-dark:#315c3a;
+    --mlerms-border:#dbe1e5; --mlerms-muted:#687487; --mlerms-text:#182235;
+}
+body {
+     linear-gradient(180deg, rgba(12, 22, 35, .18) 0%, rgba(23,32,51,.98) 50%, rgba(23,32,51,.98) 100%),
+        url("{{ url_for('static', filename='images/dashboard/main_dashboard_bg.png') }}") center top / cover fixed no-repeat;
+}
+.topbar { height:82px; padding:0 34px; }
+.brand-logo { width:48px; height:48px; flex:0 0 48px; }
+.brand-name { font-size:22px; }
+.brand small { font-size:9px; line-height:1.2; }
+.user-area { gap:12px; }
+.user-welcome { padding:8px 12px; }
+.logout { min-height:36px; padding:8px 15px; }
+.page { width:min(100%,1660px); padding:28px; }
+.unit-hub {
+    position:relative; isolation:isolate; margin-bottom:20px; padding:17px 20px 12px; overflow:hidden;
+    border:1px solid rgba(219,225,229,.96); border-radius:18px; background:rgba(255,255,255,.93);
+    box-shadow:0 8px 24px rgba(15,23,42,.09), 0 1px 3px rgba(15,23,42,.04); backdrop-filter:blur(8px);
+}
+.unit-hub-cover {
+    position:absolute; inset:0 0 78px auto; width:64%; height:calc(100% - 78px); object-fit:cover;
+    object-position:center right; opacity:.78; z-index:-1; pointer-events:none;
+    -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.24) 25%,#000 67%);
+    mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.24) 25%,#000 67%);
+}
+.unit-hub-top { min-height:96px; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:0 4px 13px; }
+.unit-identity { display:flex; align-items:center; gap:17px; min-width:0; max-width:920px; }
+.unit-logo-badge {
+    width:68px; height:68px; flex:0 0 68px; display:grid; place-items:center; padding:7px; box-sizing:border-box;
+    border:1px solid rgba(197,207,213,.95); border-radius:16px;
+    background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(241,245,246,.95));
+    box-shadow:0 5px 14px rgba(15,23,42,.11),inset 0 1px 0 rgba(255,255,255,.95);
+}
+.unit-logo-badge img { display:block; width:100%; height:100%; object-fit:contain; }
+.unit-identity-copy { min-width:0; }
+.unit-eyebrow { display:block; margin-bottom:7px; color:#315c3a; font-size:9px; font-weight:800; letter-spacing:1.7px; text-transform:uppercase; }
+.unit-title { margin:0; color:#172033; font-size:clamp(24px,1.65vw,29px); line-height:1.12; font-weight:850; letter-spacing:-.45px; }
+.unit-description { margin:8px 0 0; color:#5e6b7d; font-size:11px; line-height:1.25; }
+.unit-home-link {
+    position:relative; flex:0 0 auto; min-height:46px; display:inline-flex; align-items:center; gap:10px;
+    padding:10px 17px 10px 12px; border:1px solid rgba(255,255,255,.42); border-left:4px solid #f26b21;
+    border-radius:12px; background:linear-gradient(110deg,#202b40 0%,#172033 65%,#111a2b 100%); color:#fff;
+    font-size:14px; font-weight:800; box-shadow:0 8px 20px rgba(15,23,42,.24),inset 0 1px 0 rgba(255,255,255,.12);
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease; white-space:nowrap;
+}
+.unit-home-link::after { content:""; position:absolute; inset:-4px; border:1px solid rgba(242,107,33,.55); border-radius:15px; pointer-events:none; }
+.unit-home-link:hover { transform:translateY(-2px); background:linear-gradient(110deg,#2a3851 0%,#1b2940 65%,#152137 100%); color:#fff; box-shadow:0 11px 24px rgba(15,23,42,.29); }
+.unit-home-arrow { width:25px; height:25px; display:grid; place-items:center; border:1px solid rgba(255,255,255,.25); border-radius:8px; background:rgba(255,255,255,.09); font-size:18px; }
+.unit-hub .unit-module-nav { position:relative; z-index:2; display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:11px; padding-top:13px; border-top:1px solid rgba(205,213,220,.88); align-items:stretch; }
+.unit-module-link {
+    position:relative; min-width:0; min-height:72px; display:flex; align-items:center; gap:12px; padding:10px 14px;
+    border:1px solid #d3dce3; border-radius:14px; background:rgba(255,255,255,.96); color:#172033;
+    text-decoration:none; font-size:16px; font-weight:750; line-height:1.2; letter-spacing:-.15px;
+    box-shadow:0 2px 5px rgba(15,23,42,.025); transform:translateY(0) scale(1); transition:transform .18s ease,background .18s ease,border-color .18s ease,box-shadow .18s ease,color .18s ease;
+}
+.unit-module-link:hover { transform:translateY(-3px) scale(1.015); border-color:#b9c5cd; background:#fff; color:#172033; box-shadow:0 7px 16px rgba(15,23,42,.09); }
+.unit-module-link.active { border-color:#172033; background:linear-gradient(110deg,#202b40 0%,#172033 65%,#111a2b 100%); color:#fff; box-shadow:0 7px 17px rgba(17,26,43,.22),inset 0 1px 0 rgba(255,255,255,.12); transform:translateY(-1px) scale(1.025); }
+.unit-module-link.active::before { content:""; position:absolute; left:0; top:12px; bottom:12px; width:4px; border-radius:0 4px 4px 0; background:#f26b21; }
+.unit-module-link.active:hover { transform:translateY(-4px) scale(1.035); border-color:#172033; background:linear-gradient(110deg,#26354e 0%,#1b2940 65%,#152137 100%); color:#fff; }
+.unit-module-icon { width:46px; height:46px; flex:0 0 46px; display:grid; place-items:center; border:1px solid #d5dde2; border-radius:12px; background:#f4f7f8; }
+.unit-module-icon img { width:34px; height:34px; display:block; object-fit:contain; }
+.unit-module-link.active .unit-module-icon { border-color:rgba(255,255,255,.25); background:rgba(255,255,255,.09); }
+.unit-module-link:focus-visible,.unit-home-link:focus-visible { outline:3px solid #e87824; outline-offset:3px; }
+/* Audit-specific panels use the shared standard panel geometry and type scale. */
+.audit-panel { margin-top:18px; border-radius:16px; border:1px solid #dbe1e5; box-shadow:0 2px 8px rgba(15,23,42,.05); }
+.audit-panel-header { padding:18px 22px; }
+.audit-panel-title { font-size:16px; line-height:1.35; }
+.audit-panel-subtitle { font-size:12px; line-height:1.45; }
+.audit-panel-body { padding:20px 22px; }
+.audit-summary-stack .audit-summary-label { font-size:12px; letter-spacing:.5px; }
+.audit-summary-stack .audit-summary-value { font-size:25px !important; }
+.audit-summary-stack .audit-summary-card { border-radius:16px; }
+@media(max-width:1100px) {
+    .unit-hub .unit-module-nav { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .unit-module-link { min-height:68px; font-size:15px; }
+    .audit-filter-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media(max-width:900px) {
+    .topbar { padding:0 20px; }
+    .page { padding:20px; }
+    .unit-hub-top { min-height:100px; }
+    .unit-module-link.active { transform:translateY(-1px) scale(1.01); }
+    .unit-module-link.active:hover { transform:translateY(-2px) scale(1.015); }
+}
+@media(max-width:760px) {
+    .audit-overview-layout { grid-template-columns:1fr; }
+    .audit-summary-stack { grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:auto; }
+    .audit-summary-stack .audit-summary-card { display:block; padding:12px; }
+    .audit-summary-stack .audit-summary-value { margin-top:7px; }
+    .audit-report-pair { grid-template-columns:1fr; }
+}
+@media(max-width:700px) {
+    .topbar { min-height:78px; height:auto; padding:0 15px; }
+    .brand-logo { width:44px; height:44px; flex-basis:44px; }
+    .brand-name { font-size:21px; }
+    .brand small { display:none; }
+    .user-welcome { padding:7px 8px; }
+    .welcome-label { display:none; }
+    .page { padding:14px; }
+    .unit-hub { padding:16px 12px 11px; margin-bottom:16px; border-radius:15px; }
+    .unit-hub-cover { width:100%; height:calc(100% - 75px); opacity:.32; -webkit-mask-image:linear-gradient(90deg,rgba(0,0,0,.10),#000); mask-image:linear-gradient(90deg,rgba(0,0,0,.10),#000); }
+    .unit-hub-top { min-height:88px; align-items:flex-start; gap:12px; padding:0 2px 13px; }
+    .unit-identity { gap:10px; }
+    .unit-logo-badge { width:46px; height:46px; flex-basis:46px; padding:5px; border-radius:12px; }
+    .unit-eyebrow { font-size:8px; letter-spacing:1px; margin-bottom:5px; }
+    .unit-title { font-size:clamp(19px,5vw,25px); overflow-wrap:anywhere; }
+    .unit-description { font-size:10px; }
+    .unit-home-link { min-height:38px; padding:7px 9px; gap:6px; border-radius:9px; font-size:11px; }
+    .unit-home-arrow { width:21px; height:21px; font-size:15px; }
+    .unit-hub .unit-module-nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .unit-module-link { min-height:60px; padding:8px 9px; gap:8px; font-size:13px; }
+    .unit-module-icon { width:36px; height:36px; flex-basis:36px; border-radius:10px; }
+    .unit-module-icon img { width:27px; height:27px; }
+    .audit-summary-stack { gap:8px; }
+    .audit-summary-stack .audit-summary-card { min-height:90px; padding:12px; border-radius:11px; }
+    .audit-summary-stack .audit-summary-label { font-size:11px; letter-spacing:.35px; }
+    .audit-summary-stack .audit-summary-value { margin-top:10px; font-size:22px !important; }
+    .audit-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .audit-panel-body { padding:15px; }
+    .audit-panel-header { padding:16px 15px; }
+}
+@media(max-width:520px) { .audit-filter-grid { grid-template-columns:1fr; } }
+@media(prefers-reduced-motion:reduce) { .unit-module-link,.unit-home-link,.audit-summary-stack .audit-summary-card { transition:none; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- STANDARDIZED UNIT IDENTITY + MODULE NAVIGATION -->
+    <section class="unit-hub" aria-label="Unit overview and navigation">
+        <img class="unit-hub-cover"
+             src="{{ url_for('static', filename='images/cover/' ~ (selected_unit['unit_id'] | string | lower | replace('-', '_') | replace(' ', '_')) ~ '_cover.png') }}"
+             alt="" aria-hidden="true"
+             onerror="this.onerror=null; this.style.display='none';">
+        <div class="unit-hub-top">
+            <div class="unit-identity">
+                <div class="unit-logo-badge" aria-label="Unit insignia">
+                    <img src="{{ url_for('static', filename='images/units/' ~ (selected_unit['unit_id'] | string | lower | replace('-', '_') | replace(' ', '_')) ~ '.png') }}"
+                         alt="{{ selected_unit['unit_name'] }} insignia" onerror="this.onerror=null; this.style.visibility='hidden';">
+                </div>
+                <div class="unit-identity-copy">
+                    <span class="unit-eyebrow">MLERMS / AUDIT &amp; REPORTING</span>
+                    <h1 class="unit-title">{{ selected_unit['unit_name'] }}</h1>
+                    <p class="unit-description">Unit ID {{ selected_unit['unit_id'] }} — audit records and reporting</p>
+                </div>
+            </div>
+            <a class="unit-home-link" href="{{ url_for('dashboard.unit_dashboard', unit_id=selected_unit['unit_id']) }}" aria-label="Return to Unit Dashboard">
+                <span class="unit-home-arrow" aria-hidden="true">←</span>
+                <span>Main Dashboard</span>
+            </a>
+        </div>
+        <nav class="unit-module-nav" aria-label="Unit management modules">
+            <a class="unit-module-link" href="{{ url_for('dashboard.unit_dashboard', unit_id=selected_unit['unit_id']) }}" aria-label="Dashboard">
+                <span class="unit-module-icon dashboard-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/dashboard.png') }}" alt=""></span>
+                <span class="unit-module-label">Dashboard</span>
+            </a>
+            <a class="unit-module-link" href="{{ url_for('assets.unit_assets', unit_id=selected_unit['unit_id']) if selected_unit is defined and selected_unit else '/assets/' }}">
+                <span class="unit-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/asset_management.png') }}" alt=""></span>
+                <span class="unit-module-label">Asset Management</span>
+            </a>
+            <a class="unit-module-link" href="{{ url_for('maintenance.unit_maintenance', unit_id=selected_unit['unit_id']) if selected_unit is defined and selected_unit else '/maintenance/' }}">
+                <span class="unit-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/maintenance.png') }}" alt=""></span>
+                <span class="unit-module-label">Maintenance</span>
+            </a>
+            <a class="unit-module-link" href="{{ url_for('inventory.unit_inventory', unit_id=selected_unit['unit_id']) if selected_unit is defined and selected_unit else '/inventory/' }}">
+                <span class="unit-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/inventory.png') }}" alt=""></span>
+                <span class="unit-module-label">Inventory</span>
+            </a>
+            <a class="unit-module-link" href="{{ url_for('readiness.unit_readiness', unit_id=selected_unit['unit_id']) if selected_unit is defined and selected_unit else '/readiness/' }}">
+                <span class="unit-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/readiness.png') }}" alt=""></span>
+                <span class="unit-module-label">Readiness</span>
+            </a>
+            <a class="unit-module-link active" href="{{ url_for('audit.audit_home') }}" aria-current="page">
+                <span class="unit-module-icon" aria-hidden="true"><img src="{{ url_for('static', filename='images/dashboard/audit_and_reporting.png') }}" alt=""></span>
+                <span class="unit-module-label">Audit &amp; Reporting</span>
+            </a>
+        </nav>
+    </section>
+<div class="audit-content">
+
+
+
+            <!-- PAGE HEADER -->
+
+            
+    
+
+
+
+
+            <!-- ==================================================
+             TOP SUMMARY CARDS
+        =================================================== -->
+
+            <!-- SUMMARY + REPORTS: layout follows supplied wireframe -->
+            <section class="audit-overview-layout">
+                <div class="audit-summary-stack">
+
+<div class="audit-summary-card">
+
+                        <div class="audit-summary-label">
+                            Total Activities
+                        </div>
+
+                        <div class="audit-summary-value">
+                            {{ audit_summary.total }}
+                        </div>
+
+                </div>
+
+
+                <div class="audit-summary-card">
+
+                        <div class="audit-summary-label">
+                            Records Displayed
+                        </div>
+
+                        <div class="audit-summary-value">
+                            {{ audit_logs|length }}
+                        </div>
+
+                </div>
+
+
+                <div class="audit-summary-card">
+
+                        <div class="audit-summary-label">
+                            Audit Status
+                        </div>
+
+                        <div class="audit-summary-value" style="font-size: 20px;">
+                            Active
+                        </div>
+
+                </div>
+
+            
+                </div>
+                <div class="audit-report-pair">
+
+
+
+                <!-- BY MODULE -->
+
+                <div>
+
+                    <div class="audit-panel">
+
+                        <div class="audit-panel-header">
+
+                            <h2 class="audit-panel-title">
+                                Activities by Module
+                            </h2>
+
+                            <p class="audit-panel-subtitle">
+                                Distribution of recorded activities across system modules.
+                            </p>
+
+                        </div>
+
+
+                        <div class="audit-panel-body">
+
+                            {% if audit_summary.by_module %}
+
+                            <div class="audit-report-scroll">
+
+                                <ul class="audit-report-list">
+
+                                    {% for item in audit_summary.by_module %}
+
+                                    <li class="audit-report-item">
+
+                                        <span class="audit-report-name">
+                                            {{ item.module }}
+                                        </span>
+
+                                        <span class="audit-report-count">
+                                            {{ item.total }}
+                                        </span>
+
+                                    </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="audit-empty">
+
+                                <div class="empty-description">
+                                    No module activity available.
+                                </div>
+
+                            </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- BY ACTION -->
+
+                <div>
+
+                    <div class="audit-panel">
+
+                        <div class="audit-panel-header">
+
+                            <h2 class="audit-panel-title">
+                                Activities by Action
+                            </h2>
+
+                            <p class="audit-panel-subtitle">
+                                Distribution of recorded actions across the system.
+                            </p>
+
+                        </div>
+
+
+                        <div class="audit-panel-body">
+
+                            {% if audit_summary.by_action %}
+
+                            <div class="audit-report-scroll">
+
+                                <ul class="audit-report-list">
+
+                                    {% for item in audit_summary.by_action %}
+
+                                    <li class="audit-report-item">
+
+                                        <span class="audit-report-name">
+                                            {{ item.action }}
+                                        </span>
+
+                                        <span class="audit-report-count">
+                                            {{ item.total }}
+                                        </span>
+
+                                    </li>
+
+                                    {% endfor %}
+
+                                </ul>
+
+                            </div>
+
+                            {% else %}
+
+                            <div class="audit-empty">
+
+                                <div class="empty-description">
+                                    No action activity available.
+                                </div>
+
+                            </div>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            
+                </div>
+            </section>
+
+            <!-- ==================================================
+             FILTER SECTION
+        =================================================== -->
+
+            <div class="audit-panel">
+
+                <div class="audit-panel-header">
+
+                    <h2 class="audit-panel-title">
+                        Filter Audit Records
+                    </h2>
+
+                    <p class="audit-panel-subtitle">
+                        Filter records by module, action, user or date.
+                    </p>
+
+                </div>
+
+
+                <div class="audit-panel-body">
+
+                    <form method="GET" action="{{ url_for('audit.audit_home') }}">
+
+                        <div class="audit-filter-grid">
+
+
+                            <!-- MODULE -->
+
+                            <div class="audit-filter-field">
+
+                                <label class="audit-filter-label">
+                                    Module
+                                </label>
+
+                                <select name="module" class="audit-filter-select">
+
+                                    <option value="">
+                                        All Modules
+                                    </option>
+
+                                    <option value="AUTHENTICATION" {% if selected_module=="AUTHENTICATION" %} selected
+                                        {% endif %}>
+                                        Authentication
+                                    </option>
+
+                                    <option value="ASSET" {% if selected_module=="ASSET" %} selected {% endif %}>
+                                        Asset
+                                    </option>
+
+                                    <option value="MAINTENANCE" {% if selected_module=="MAINTENANCE" %} selected {%
+                                        endif %}>
+                                        Maintenance
+                                    </option>
+
+                                    <option value="INVENTORY" {% if selected_module=="INVENTORY" %} selected {% endif
+                                        %}>
+                                        Inventory
+                                    </option>
+
+                                    <option value="SYSTEM" {% if selected_module=="SYSTEM" %} selected {% endif %}>
+                                        System
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+
+                            <!-- ACTION -->
+
+                            <div class="audit-filter-field">
+
+                                <label class="audit-filter-label">
+                                    Action
+                                </label>
+
+                                <select name="action" class="audit-filter-select">
+
+                                    <option value="">
+                                        All Actions
+                                    </option>
+
+                                    <option value="LOGIN" {% if selected_action=="LOGIN" %} selected {% endif %}>
+                                        Login
+                                    </option>
+
+                                    <option value="LOGOUT" {% if selected_action=="LOGOUT" %} selected {% endif %}>
+                                        Logout
+                                    </option>
+
+                                    <option value="LOGIN_FAILED" {% if selected_action=="LOGIN_FAILED" %} selected {%
+                                        endif %}>
+                                        Login Failed
+                                    </option>
+
+                                    <option value="CREATE" {% if selected_action=="CREATE" %} selected {% endif %}>
+                                        Create
+                                    </option>
+
+                                    <option value="UPDATE" {% if selected_action=="UPDATE" %} selected {% endif %}>
+                                        Update
+                                    </option>
+
+                                    <option value="DELETE" {% if selected_action=="DELETE" %} selected {% endif %}>
+                                        Delete
+                                    </option>
+
+                                    <option value="COMPLETE" {% if selected_action=="COMPLETE" %} selected {% endif %}>
+                                        Complete
+                                    </option>
+
+                                    <option value="DECOMMISSION" {% if selected_action=="DECOMMISSION" %} selected {%
+                                        endif %}>
+                                        Decommission
+                                    </option>
+
+                                    <option value="RECOMMISSION" {% if selected_action=="RECOMMISSION" %} selected {%
+                                        endif %}>
+                                        Recommission
+                                    </option>
+
+                                    <option value="MARK_OVERDUE" {% if selected_action=="MARK_OVERDUE" %} selected {%
+                                        endif %}>
+                                        Mark Overdue
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+
+                            <!-- USER -->
+
+                            <div class="audit-filter-field">
+
+                                <label class="audit-filter-label">
+                                    User ID
+                                </label>
+
+                                <input type="number" name="user_id" class="audit-filter-control" value="{{ selected_user_id }}"
+                                    placeholder="User ID" min="1">
+
+                            </div>
+
+
+
+                            <!-- DATE FROM -->
+
+                            <div class="audit-filter-field">
+
+                                <label class="audit-filter-label">
+                                    From Date
+                                </label>
+
+                                <input type="date" name="date_from" class="audit-filter-control" value="{{ date_from }}">
+
+                            </div>
+
+
+
+                            <!-- DATE TO -->
+
+                            <div class="audit-filter-field">
+
+                                <label class="audit-filter-label">
+                                    To Date
+                                </label>
+
+                                <input type="date" name="date_to" class="audit-filter-control" value="{{ date_to }}">
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- BUTTONS -->
+
+                        <div class="audit-actions">
+
+                            <button type="submit" class="audit-button audit-button-primary">
+                                Apply Filters
+                            </button>
+
+
+                            <a href="/audit/" class="audit-button audit-button-secondary">
+                                Clear Filters
+                            </a>
+
+
+                            <a href="/audit/export/csv?module={{ selected_module }}&action={{ selected_action }}&user_id={{ selected_user_id }}&date_from={{ date_from }}&date_to={{ date_to }}"
+                                class="audit-button audit-button-export">
+                                Export CSV
+                            </a>
+
+
+                            <a href="/audit/export/pdf?module={{ selected_module }}&action={{ selected_action }}&user_id={{ selected_user_id }}&date_from={{ date_from }}&date_to={{ date_to }}"
+                                class="audit-button audit-button-export">
+                                Export PDF
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ==================================================
+             AUDIT RECORDS
+        =================================================== -->
+
+            <div class="audit-panel">
+
+                <div class="audit-panel-header">
+
+                    <h2 class="audit-panel-title">
+                        Audit Records
+                    </h2>
+
+                    <p class="audit-panel-subtitle">
+                        Latest recorded system activities.
+                    </p>
+
+                </div>
+
+
+                <div class="audit-panel-body">
+
+
+                    {% if audit_logs %}
+
+                    <div class="audit-table-wrap">
+
+                        <table class="audit-table">
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        ID
+                                    </th>
+
+                                    <th>
+                                        Date & Time
+                                    </th>
+
+                                    <th>
+                                        User
+                                    </th>
+
+                                    <th>
+                                        Action
+                                    </th>
+
+                                    <th>
+                                        Module
+                                    </th>
+
+                                    <th>
+                                        Record ID
+                                    </th>
+
+                                    <th>
+                                        Description
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody>
+
+                                {% for log in audit_logs %}
+
+                                <tr>
+
+                                    <td>
+                                        {{ log.audit_id }}
+                                    </td>
+
+                                    <td>
+                                        {{ log.created_at }}
+                                    </td>
+
+                                    <td>
+
+                                        {% if log.username %}
+
+                                        {{ log.username }}
+
+                                        {% else %}
+
+                                        System / Unknown
+
+                                        {% endif %}
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="audit-badge">
+                                            {{ log.action }}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+
+                                        <span class="audit-badge module-badge">
+                                            {{ log.module }}
+                                        </span>
+
+                                    </td>
+
+                                    <td>
+                                        {{ log.record_id or "-" }}
+                                    </td>
+
+                                    <td>
+                                        {{ log.description }}
+                                    </td>
+
+                                </tr>
+
+                                {% endfor %}
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+
+                    {% else %}
+
+                    <div class="audit-empty">
+
+                        <div class="audit-panel-title">
+                            No Audit Records Found
+                        </div>
+
+                        <div class="empty-description">
+                            No records match the selected filters.
+                        </div>
+
+                    </div>
+
+                    {% endif %}
+
+
+                </div>
+
+            </div>
+
+
+        
+</div>
+{% endblock %}

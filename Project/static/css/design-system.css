@@ -1,0 +1,176 @@
+/* ================================================================
+   MLERMS MASTER DESIGN SYSTEM
+   Shared global styling for pages that extend templates/base.html.
+   Main Dashboard is the visual reference.
+   ================================================================ */
+
+:root {
+    --mlerms-navy: #172033;
+    --mlerms-navy-2: #223047;
+    --mlerms-green: #4f7b4f;
+    --mlerms-green-dark: #315c3a;
+    --mlerms-orange: #e87824;
+    --mlerms-surface: rgba(255, 255, 255, .96);
+    --mlerms-surface-solid: #fff;
+    --mlerms-background: #f3f5f7;
+    --mlerms-border: #dbe1e5;
+    --mlerms-text: #182235;
+    --mlerms-muted: #687487;
+    --mlerms-text-light: #c4ccd7;
+    --mlerms-border-dark: #637087;
+    --mlerms-table-header: #f1f4f8;
+    --mlerms-table-hover: #f5f8fc;
+    --mlerms-font-family: Arial, Helvetica, sans-serif;
+    --mlerms-font-xs: 10px;
+    --mlerms-font-sm: 12px;
+    --mlerms-font-md: 14px;
+    --mlerms-font-lg: 18px;
+    --mlerms-font-xl: 22px;
+    --mlerms-font-title: 28px;
+    --mlerms-header-height: 82px;
+    --mlerms-content-width: 1660px;
+    --mlerms-space-1: 4px;
+    --mlerms-space-2: 8px;
+    --mlerms-space-3: 12px;
+    --mlerms-space-4: 16px;
+    --mlerms-space-5: 20px;
+    --mlerms-space-6: 24px;
+    --mlerms-space-8: 32px;
+    --mlerms-radius-sm: 8px;
+    --mlerms-radius-md: 12px;
+    --mlerms-radius-lg: 16px;
+    --mlerms-shadow-sm: 0 2px 8px rgba(15, 23, 42, .05);
+    --mlerms-shadow-md: 0 4px 18px rgba(10, 18, 30, .10);
+    --mlerms-shadow-lg: 0 10px 30px rgba(15, 23, 42, .12);
+    --mlerms-transition: .2s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-height: 100%; scroll-behavior: smooth; }
+
+body.mlerms-app {
+    min-height: 100vh;
+    margin: 0;
+    font-family: var(--mlerms-font-family);
+    color: var(--mlerms-text);
+    background:
+        linear-gradient(180deg, rgba(12, 22, 35, .18) 0%, rgba(23,32,51,.98) 50%, rgba(23,32,51,.98) 100%),
+        url("../images/dashboard/main_dashboard_bg.png") center top / cover fixed no-repeat;
+}
+.mlerms-app a { text-decoration: none; }
+
+/* Shared header: same dimensions and styling as Main Dashboard */
+.mlerms-app .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+    height: var(--mlerms-header-height);
+    padding: 0 34px;
+    color: #fff;
+    background: rgba(23, 32, 51, .98);
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: 0 4px 18px rgba(10, 18, 30, .18);
+}
+.mlerms-app .topbar::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    content: "";
+    background: linear-gradient(90deg, #f27a22 0 33.33%, #dfe6e1 33.33% 66.66%, #587b59 66.66% 100%);
+    pointer-events: none;
+}
+.mlerms-app .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.mlerms-app .brand-logo {
+    display: block;
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .22));
+}
+.mlerms-app .brand-copy { min-width: 0; }
+.mlerms-app .brand-name { color: #fff; font-size: 22px; font-weight: 800; line-height: 1; letter-spacing: .7px; }
+.mlerms-app .brand small {
+    display: block;
+    margin-top: 5px;
+    color: #c4ccd7;
+    font-size: 9px;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: .15px;
+    white-space: nowrap;
+}
+.mlerms-app .user-area { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-width: 0; color: #eef2f6; font-size: 13px; }
+.mlerms-app .user-welcome {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    padding: 8px 12px;
+    color: #eef2f6;
+    background: rgba(255, 255, 255, .045);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: var(--mlerms-radius-sm);
+}
+.mlerms-app .welcome-label { color: #aeb8c7; font-size: 11px; }
+.mlerms-app .user-welcome strong { overflow: hidden; color: #fff; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.mlerms-app .logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 8px 15px;
+    color: #fff;
+    background: rgba(255, 255, 255, .025);
+    border: 1px solid var(--mlerms-border-dark);
+    border-radius: var(--mlerms-radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background var(--mlerms-transition), border-color var(--mlerms-transition);
+}
+.mlerms-app .logout:hover { color: #fff; background: rgba(255, 255, 255, .10); border-color: #8994a8; }
+
+/* Shared content frame */
+.mlerms-app .page { width: min(100%, var(--mlerms-content-width)); min-width: 0; margin: 0 auto; padding: 28px; }
+.mlerms-app .page-title { position: relative; overflow: hidden; margin: 0 0 24px; color: var(--mlerms-text); border: 1px solid rgba(219, 225, 229, .95); border-radius: var(--mlerms-radius-lg); box-shadow: var(--mlerms-shadow-sm); }
+.mlerms-app .page-title h1 { margin: 0; color: var(--mlerms-text); font-size: var(--mlerms-font-title); font-weight: 800; line-height: 1.2; }
+.mlerms-app .page-title p { margin: 6px 0 0; color: var(--mlerms-muted); font-size: var(--mlerms-font-md); line-height: 1.5; }
+.mlerms-app .page-eyebrow { display: inline-block; margin-bottom: 7px; color: var(--mlerms-green-dark); font-size: var(--mlerms-font-xs); font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+
+/* Reusable cards and section headers */
+.mlerms-app .dashboard-panel { min-width: 0; overflow: hidden; background: var(--mlerms-surface); border: 1px solid var(--mlerms-border); border-radius: var(--mlerms-radius-lg); box-shadow: var(--mlerms-shadow-sm); }
+.mlerms-app .panel-header { padding: 18px 22px; background: rgba(255, 255, 255, .72); border-bottom: 1px solid var(--mlerms-border); }
+.mlerms-app .panel-title { color: var(--mlerms-text); font-size: 16px; font-weight: 800; line-height: 1.35; }
+.mlerms-app .panel-subtitle { margin-top: 4px; color: var(--mlerms-muted); font-size: var(--mlerms-font-sm); line-height: 1.45; }
+.mlerms-app .panel-body { padding: 20px 22px; }
+
+@media (max-width: 900px) {
+    .mlerms-app .topbar { padding-right: 20px; padding-left: 20px; }
+    .mlerms-app .page { padding: 20px; }
+}
+@media (max-width: 700px) {
+    .mlerms-app .topbar { height: auto; min-height: 72px; padding: 12px 14px; gap: 10px; }
+    .mlerms-app .brand { gap: 9px; }
+    .mlerms-app .brand-logo { flex-basis: 40px; width: 40px; height: 40px; }
+    .mlerms-app .brand-name { font-size: 18px; }
+    .mlerms-app .brand small { display: none; }
+    .mlerms-app .user-area { gap: 7px; font-size: 11px; }
+    .mlerms-app .user-welcome { padding: 7px 8px; }
+    .mlerms-app .welcome-label { display: none; }
+    .mlerms-app .logout { min-height: 32px; padding: 6px 9px; }
+    .mlerms-app .page { padding: 14px; }
+    .mlerms-app .page-title h1 { font-size: 23px; }
+    .mlerms-app .panel-header { padding: 15px 16px; }
+    .mlerms-app .panel-body { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .mlerms-app *, .mlerms-app *::before, .mlerms-app *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

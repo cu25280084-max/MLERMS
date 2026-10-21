@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Maintenance - MLERMS</title>
+    <style>
+
+* { box-sizing: border-box; }
+
+:root {
+    --mlerms-navy: #172033;
+    --mlerms-green: #238b5b;
+    --mlerms-green-dark: #1d754d;
+    --mlerms-orange: #e87824;
+    --mlerms-surface: rgba(255,255,255,.97);
+    --mlerms-border: #dbe1e5;
+    --mlerms-text: #182235;
+    --mlerms-muted: #687487;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--mlerms-text);
+    background:
+        linear-gradient(
+            180deg,
+            rgba(12,22,35,.18) 0%,
+            rgba(243,245,247,.88) 14%,
+            #dddddd 100%
+        ),
+        url("{{ url_for('static', filename='images/dashboard/main_dashboard_bg.png') }}")
+        center top / cover fixed no-repeat;
+}
+
+a { text-decoration: none; }
+
+/* TOP BAR — same MLERMS standard */
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 94px;
+    padding: 0 36px;
+    background: rgba(23,32,51,.98);
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 4px 18px rgba(10,18,30,.18);
+}
+
+.topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        #f27a22 0 33.33%,
+        #dfe6e1 33.33% 66.66%,
+        #587b59 66.66% 100%
+    );
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.brand-logo {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+    flex: 0 0 54px;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,.22));
+}
+
+.brand-copy { min-width: 0; }
+
+.brand-name {
+    font-size: 24px;
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: .7px;
+    color: #fff;
+}
+
+.brand small {
+    display: block;
+    margin-top: 5px;
+    font-size: 9.5px;
+    line-height: 1.2;
+    color: #c4ccd7;
+    white-space: nowrap;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+}
+
+.user-welcome {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 9px 14px;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 8px;
+    background: rgba(255,255,255,.045);
+    color: #eef2f6;
+}
+
+.welcome-label { color: #aeb8c7; font-size: 11px; }
+
+.user-welcome strong {
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.logout {
+    padding: 9px 16px;
+    border-radius: 8px;
+    border: 1px solid #637087;
+    color: #fff;
+    background: rgba(255,255,255,.025);
+    font-size: 12px;
+    font-weight: 600;
+    transition: .15s ease;
+}
+
+.logout:hover {
+    background: var(--mlerms-green-dark);
+    border-color: #6f936f;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+/* PAGE */
+.page {
+    width: min(100%, 1660px);
+    margin: 0 auto;
+    padding: 8px 24px 38px;
+}
+
+/* UNIT COVER — same as Asset Add */
+.page-title {
+    position: relative;
+    min-height: 200px;
+    margin-bottom: 18px;
+    padding: 35px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    background: rgba(255,255,255,.90);
+    border: 1px solid rgba(219,225,229,.95);
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(15,23,42,.07);
+    backdrop-filter: blur(7px);
+    overflow: hidden;
+}
+
+.page-title-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+    opacity: .88;
+    z-index: 0;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0,0,0,.45) 22%,
+        #000 55%
+    );
+    mask-image: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(0,0,0,.45) 22%,
+        #000 55%
+    );
+}
+
+.page-title-main {
+    position: relative;
+    z-index: 2;
+    min-width: 0;
+    max-width: 62%;
+}
+
+.page-eyebrow {
+    display: block;
+    margin-bottom: 5px;
+    color: #315c3a;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.15px;
+    text-transform: uppercase;
+}
+
+.page-title h1 {
+    margin: 0;
+    color: var(--mlerms-navy);
+    font-size: 30px;
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -.25px;
+}
+
+.page-title p {
+    margin: 6px 0 0;
+    color: #6c7787;
+    font-size: 13px;
+    line-height: 1.35;
+}
+
+.page-title-accent {
+    position: relative;
+    z-index: 2;
+    width: 128px;
+    height: 4px;
+    flex: 0 0 128px;
+    border-radius: 999px;
+    background: linear-gradient(
+        90deg,
+        var(--mlerms-orange) 0 33%,
+        #dce3e0 33% 66%,
+        #4f7b4f 66% 100%
+    );
+}
+
+/* BACK BUTTON — same placement/style as Asset Add */
+.add-page-nav {
+    margin-bottom: 18px;
+}
+
+.back-unit-dashboard {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    min-height: 40px;
+    padding: 11px 18px;
+    border: 1px solid #cfd7de;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--mlerms-navy);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background .15s ease, border-color .15s ease,
+                transform .15s ease, box-shadow .15s ease;
+}
+
+.back-unit-dashboard:hover {
+    background: #f5f7f9;
+    border-color: #aeb9c3;
+    color: var(--mlerms-navy);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15,23,42,.08);
+}
+
+/* FORM CARD — same visual language as Asset Add */
+.asset-form-card {
+    background: rgba(255,255,255,.97);
+    border: 1px solid var(--mlerms-border);
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(15,23,42,.055);
+    overflow: hidden;
+}
+
+.asset-form-header {
+    padding: 19px 20px 16px;
+    border-bottom: 1px solid #e6ebee;
+    background: #fff;
+}
+
+.asset-form-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--mlerms-navy);
+}
+
+.asset-form-header p {
+    margin: 5px 0 0;
+    color: var(--mlerms-muted);
+    font-size: 13px;
+}
+
+.asset-form-body {
+    padding: 24px;
+    background: #fff;
+}
+
+.asset-form-body .mb-3,
+.asset-form-body .mb-4 {
+    margin-bottom: 18px !important;
+}
+
+.asset-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+    row-gap: 0;
+}
+
+.asset-form-label {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--mlerms-navy);
+}
+
+.asset-form-control {
+    width: 100%;
+    min-height: 42px;
+    padding: 9px 12px;
+    border: 1px solid #d5dde3;
+    border-radius: 9px;
+    background: #fbfcfd;
+    color: #182235;
+    font-size: 13px;
+    box-shadow: none;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.asset-form-control:focus {
+    border-color: #6fa98a;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(35,139,91,.10);
+}
+
+.asset-form-control:disabled {
+    background: #f2f5f7;
+    color: #7a8493;
+    cursor: not-allowed;
+}
+
+.form-text {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    line-height: 1.35;
+    color: #7a8493;
+}
+
+.asset-error {
+    margin-bottom: 18px;
+    padding: 11px 13px;
+    border: 1px solid #efb6bd;
+    border-radius: 9px;
+    background: #fff5f6;
+    color: #9b3341;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* Automatic status information */
+.status-info {
+    margin-top: 2px;
+    padding: 13px 15px;
+    border: 1px solid #c9ddeb;
+    border-radius: 9px;
+    background: #f3f8fc;
+    color: #35556f;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.status-info strong {
+    color: var(--mlerms-navy);
+    font-weight: 800;
+}
+
+.status-info .status-preview {
+    color: #238b5b;
+    font-weight: 800;
+}
+
+.status-info small {
+    display: block;
+    margin-top: 4px;
+    color: #687487;
+    font-size: 11px;
+}
+
+/* ACTIONS */
+.add-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.asset-submit,
+.asset-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 9px 15px;
+    border-radius: 9px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.asset-submit {
+    border: 1px solid #238b5b;
+    background: #238b5b;
+    color: #fff;
+}
+
+.asset-submit:hover {
+    background: #1d754d;
+    border-color: #1d754d;
+    color: #fff;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 12px rgba(35,139,91,.18);
+}
+
+.asset-cancel {
+    border: 1px solid #cfd7de;
+    background: #fff;
+    color: #526070;
+}
+
+.asset-cancel:hover {
+    background: #f5f7f9;
+    border-color: #aeb9c3;
+    color: var(--mlerms-navy);
+    transform: translateY(-1px);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .topbar { padding: 0 20px; }
+    .page { padding: 8px 18px 28px; }
+    .page-title { min-height: 150px; }
+    .page-title-main { max-width: 75%; }
+}
+
+@media (max-width: 700px) {
+    .topbar {
+        min-height: 78px;
+        height: auto;
+        padding: 0 15px;
+    }
+
+    .brand-logo {
+        width: 44px;
+        height: 44px;
+        flex-basis: 44px;
+    }
+
+    .brand-name { font-size: 21px; }
+    .brand small { display: none; }
+
+    .user-welcome { padding: 7px 8px; }
+    .welcome-label { display: none; }
+
+    .page { padding: 8px 14px 24px; }
+
+    .page-title {
+        min-height: 150px;
+        padding: 24px 16px;
+    }
+
+    .page-title-main { max-width: 100%; }
+
+    .page-title-cover {
+        opacity: .60;
+        -webkit-mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,0,0,.35) 30%,
+            #000 70%
+        );
+        mask-image: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0,0,0,.35) 30%,
+            #000 70%
+        );
+    }
+
+    .page-title h1 { font-size: 24px; }
+    .page-title-accent { display: none; }
+
+    .asset-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .asset-form-body { padding: 18px; }
+
+    .add-form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .asset-submit,
+    .asset-cancel {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .user-area { gap: 6px; }
+    .logout { padding: 8px 10px; }
+    .back-unit-dashboard {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <img
+            alt="MLERMS Logo"
+            class="brand-logo"
+            onerror="this.style.display='none';"
+            src="{{ url_for('static', filename='images/mlerms-logo.png') }}"
+        />
+        <div class="brand-copy">
+            <div class="brand-name">MLERMS</div>
+            <small>Military Logistics &amp; Equipment Readiness Management System</small>
+        </div>
+    </div>
+
+    <div class="user-area">
+        <div class="user-welcome">
+            <span class="welcome-label">Welcome</span>
+            <strong>{{ session.get("username", "") }}</strong>
+        </div>
+        <a class="logout" href="{{ url_for('auth.logout') }}">Logout</a>
+    </div>
+</header>
+
+<main class="page">
+
+    <section class="page-title">
+        <img
+            class="page-title-cover"
+            src="{{ url_for('static', filename='images/cover/' ~ (selected_unit['unit_id'] | lower | replace('-', '_')) ~ '_cover.png') }}"
+            alt=""
+            aria-hidden="true"
+            onerror="this.style.display='none';"
+        />
+
+        <div class="page-title-main">
+            <span class="page-eyebrow">MLERMS / MAINTENANCE MANAGEMENT</span>
+            <h1>{{ selected_unit['unit_name'] }}</h1>
+            <p>Unit ID {{ selected_unit['unit_id'] }} — maintenance record</p>
+        </div>
+
+        <div class="page-title-accent" aria-hidden="true"></div>
+    </section>
+
+    <div class="add-page-nav">
+        <a
+            class="back-unit-dashboard"
+            href="{{ url_for('maintenance.unit_maintenance', unit_id=selected_unit['unit_id']) }}"
+            aria-label="Back to Maintenance Management"
+        >
+            <span aria-hidden="true">←</span>
+            <span>Back to Maintenance Management</span>
+        </a>
+    </div>
+
+    <section class="asset-form-card">
+        <div class="asset-form-header">
+            <h2>Add Maintenance</h2>
+            <p>Create a maintenance record for an asset in the selected Army Unit.</p>
+        </div>
+
+        <div class="asset-form-body">
+            {% if error %}
+            <div class="asset-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST">
+
+                <div class="asset-form-grid">
+
+                    <div class="mb-3">
+                        <label for="allocation_id" class="asset-form-label">
+                            Asset
+                        </label>
+
+                        <select name="allocation_id" id="allocation_id" class="asset-form-control" required>
+                            <option value="">Select Asset</option>
+
+                            {% for allocation in allocations %}
+                            <option
+                                value="{{ allocation['allocation_id'] }}"
+                                data-available="{{ allocation['available_quantity'] }}"
+                            >
+                                {{ allocation['asset_name'] }} — {{ allocation['asset_type_id'] }}
+                                | Available: {{ allocation['available_quantity'] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+
+                        <div id="availabilityText" class="form-text">
+                            Select an asset to see available quantity.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="maintenance_type" class="asset-form-label">
+                            Maintenance Type
+                        </label>
+
+                        <select name="type" id="maintenance_type" class="asset-form-control" required>
+                            <option value="" selected>Select Maintenance Type</option>
+                            <option value="Preventive Maintenance">Preventive Maintenance</option>
+                            <option value="Corrective Maintenance">Corrective Maintenance</option>
+                            <option value="Inspection">Inspection</option>
+                            <option value="Overhaul">Overhaul</option>
+                            <option value="Emergency Maintenance">Emergency Maintenance</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="maintenance_date" class="asset-form-label">
+                            Maintenance Start Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="maintenance_date"
+                            id="maintenance_date"
+                            class="asset-form-control"
+                            min="{{ current_date }}"
+                            required
+                        >
+
+                        <div class="form-text">
+                            For new maintenance, the start date cannot be before today.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="expected_completion_date" class="asset-form-label">
+                            Expected Completion Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="expected_completion_date"
+                            id="expected_completion_date"
+                            class="asset-form-control"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="status-info">
+                    <strong>Maintenance Status:</strong>
+                    <span id="statusPreview">Select the maintenance dates.</span>
+
+                    <small>
+                        Status is automatically determined by the maintenance dates.
+                        You cannot manually select In Progress.
+                    </small>
+                </div>
+
+                <div class="asset-form-grid" style="margin-top:18px;">
+
+                    <div class="mb-3">
+                        <label for="quantity_under_maintenance" class="asset-form-label">
+                            Quantity Under Maintenance
+                        </label>
+
+                        <input
+                            type="number"
+                            name="quantity_under_maintenance"
+                            id="quantity_under_maintenance"
+                            class="asset-form-control"
+                            min="1"
+                            required
+                            placeholder="Enter quantity"
+                        >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="next_due_date" class="asset-form-label">
+                            Next Maintenance Due Date
+                        </label>
+
+                        <input
+                            type="date"
+                            name="next_due_date"
+                            id="next_due_date"
+                            class="asset-form-control"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+                <div class="add-form-actions">
+                    <button type="submit" class="asset-submit">
+                        Save Maintenance
+                    </button>
+
+                    <a
+                        href="{{ url_for('maintenance.unit_maintenance', unit_id=selected_unit['unit_id']) }}"
+                        class="asset-cancel"
+                    >
+                        Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+</main>
+
+<script>
+const startDate =
+            document.getElementById(
+                "maintenance_date"
+            );
+
+        const completionDate =
+            document.getElementById(
+                "expected_completion_date"
+            );
+
+        const statusPreview =
+            document.getElementById(
+                "statusPreview"
+            );
+
+        const allocation =
+            document.getElementById(
+                "allocation_id"
+            );
+
+        const quantity =
+            document.getElementById(
+                "quantity_under_maintenance"
+            );
+
+        const availabilityText =
+            document.getElementById(
+                "availabilityText"
+            );
+
+
+        function updateCompletionMinimum() {
+
+            if (startDate.value) {
+
+                completionDate.min =
+                    startDate.value;
+
+            }
+
+        }
+
+
+        function updateStatusPreview() {
+
+            if (
+                !startDate.value ||
+                !completionDate.value
+            ) {
+
+                statusPreview.textContent =
+                    "Select the maintenance dates.";
+
+                return;
+
+            }
+
+            const today =
+                "{{ current_date }}";
+
+            if (
+                startDate.value > today
+            ) {
+
+                statusPreview.textContent =
+                    "Scheduled";
+
+            }
+
+            else if (
+                today < completionDate.value
+            ) {
+
+                statusPreview.textContent =
+                    "In Progress";
+
+            }
+
+            else {
+
+                statusPreview.textContent =
+                    "Pending Confirmation";
+
+            }
+
+        }
+
+
+        startDate.addEventListener(
+            "change",
+            function () {
+
+                updateCompletionMinimum();
+                updateStatusPreview();
+
+            }
+        );
+
+
+        completionDate.addEventListener(
+            "change",
+            updateStatusPreview
+        );
+
+
+        allocation.addEventListener(
+            "change",
+            function () {
+
+                const option =
+                    allocation.options[
+                    allocation.selectedIndex
+                    ];
+
+                if (!option.value) {
+
+                    quantity.removeAttribute(
+                        "max"
+                    );
+
+                    availabilityText.textContent =
+                        "Select an asset to see available quantity.";
+
+                    return;
+
+                }
+
+                const available =
+                    option.dataset.available;
+
+                quantity.max = available;
+
+                availabilityText.textContent =
+                    "Available quantity: "
+                    + available;
+
+            }
+        );
+
+
+        updateCompletionMinimum();
+</script>
+
+</body>
+</html>

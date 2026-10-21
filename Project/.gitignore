@@ -1,0 +1,33 @@
+# Secrets
+
+.env
+.env.*
+
+# Python virtual environments
+
+venv/
+.venv/
+
+# Python cache
+
+**pycache**/
+*.py[cod]
+
+# Database backups
+
+*.sql
+*.sql.gz
+
+# Logs
+
+*.log
+
+# Editor files
+
+.vscode/
+.idea/
+
+# Operating system files
+
+.DS_Store
+Thumbs.db
